@@ -42,14 +42,12 @@ namespace brica2 {
         core::Agent agent;
         VirtualTimeSyncScheduler s(agent);
 
-        core::Vector<short> zero({3});
-        core::Vector<short> v ({1, 2, 3}, {{3}});
+        core::Vector<int> zero({3});
+        core::Vector<int> v ({1, 2, 3}, {{3}});
 
-        components::Const c0("out", zero);
+        components::Const c0("out", v);
         components::Pipe c1("in", "out", zero);
         components::Null c2("in", zero);
-
-        c0.set_output("out", v.clone());
 
         connect(c0, "out", c1, "in");
         connect(c1, "out", c2, "in");
@@ -60,34 +58,31 @@ namespace brica2 {
 
         s.update();
 
-        ASSERT_TRUE(v == core::Vector<short>(c0.get_output("out")));
-
-        ASSERT_TRUE(v    == core::Vector<short>(c0.get_output("out")));
-        ASSERT_TRUE(zero == core::Vector<short>(c0.get_out_port("out").get_buffer()));
-        ASSERT_TRUE(zero == core::Vector<short>(c1.get_in_port("in").get_buffer()));
-        ASSERT_TRUE(zero == core::Vector<short>(c1.get_out_port("out").get_buffer()));
-        ASSERT_TRUE(zero == core::Vector<short>(c2.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c0.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c1.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c1.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c2.get_in_port("in").get_buffer()));
 
         s.step();
 
-        ASSERT_TRUE(v    == core::Vector<short>(c0.get_out_port("out").get_buffer()));
-        ASSERT_TRUE(zero == core::Vector<short>(c1.get_in_port("in").get_buffer()));
-        ASSERT_TRUE(zero == core::Vector<short>(c1.get_out_port("out").get_buffer()));
-        ASSERT_TRUE(zero == core::Vector<short>(c2.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(v    == core::Vector<int>(c0.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c1.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c1.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c2.get_in_port("in").get_buffer()));
 
         s.step();
 
-        ASSERT_TRUE(v    == core::Vector<short>(c0.get_out_port("out").get_buffer()));
-        ASSERT_TRUE(v    == core::Vector<short>(c1.get_in_port("in").get_buffer()));
-        ASSERT_TRUE(v    == core::Vector<short>(c1.get_out_port("out").get_buffer()));
-        ASSERT_TRUE(zero == core::Vector<short>(c2.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(v    == core::Vector<int>(c0.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(v    == core::Vector<int>(c1.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(v    == core::Vector<int>(c1.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c2.get_in_port("in").get_buffer()));
 
         s.step();
 
-        ASSERT_TRUE(v == core::Vector<short>(c0.get_out_port("out").get_buffer()));
-        ASSERT_TRUE(v == core::Vector<short>(c1.get_in_port("in").get_buffer()));
-        ASSERT_TRUE(v == core::Vector<short>(c1.get_out_port("out").get_buffer()));
-        ASSERT_TRUE(v == core::Vector<short>(c2.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(v == core::Vector<int>(c0.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(v == core::Vector<int>(c1.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(v == core::Vector<int>(c1.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(v == core::Vector<int>(c2.get_in_port("in").get_buffer()));
       }
     }
   }

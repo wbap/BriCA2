@@ -32,8 +32,8 @@ add_library(brica2
   brica2/core/utils.cpp
   brica2/core/port.cpp
   brica2/core/unit.cpp
-  brica2/core/component.cpp
-  brica2/core/module.cpp
+#  brica2/core/component.cpp
+#  brica2/core/module.cpp
   brica2/core/agent.cpp
   brica2/core/scheduler.cpp
 
@@ -83,6 +83,7 @@ if (test)
     tests/brica2/core/vector.cpp
     tests/brica2/core/port.cpp
     tests/brica2/core/unit.cpp
+
     tests/brica2/core/component.cpp
     tests/brica2/core/module.cpp
     tests/brica2/core/agent.cpp

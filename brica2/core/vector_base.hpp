@@ -103,17 +103,9 @@ namespace brica2 {
         }
       }
 
-      friend void swap(VectorBase& a, VectorBase& b, bool destructive=false)
+      friend void swap(VectorBase& a, VectorBase& b)
       {
-        if(destructive) {
-          std::swap(a.self->buffer, b.self->buffer);
-          std::swap(a.self->shape, b.self->shape);
-          std::swap(a.self->bytes, b.self->bytes);
-          std::swap(a.self->offset, b.self->offset);
-          std::swap(a.self->owner, b.self->owner);
-        } else {
-          std::swap(a.self, b.self);
-        }
+        std::swap(a.self, b.self);
       }
 
       char* buffer() const

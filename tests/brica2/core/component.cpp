@@ -4,7 +4,7 @@
  *
  * @author Copyright (C) 2016 Kotone Itaya
  * @version 1.0.0
- * @created  2016/06/29 Kotone Itaya -- Created!
+ * @created  2016/06/30 Kotone Itaya -- Created!
  * @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,61 +27,56 @@
  *****************************************************************************/
 
 #include "gtest/gtest.h"
-#include "brica2/core/component.hpp"
 #include "brica2/core/vector.hpp"
+#include "brica2/components/const.hpp"
+#include "brica2/components/pipe.hpp"
+#include "brica2/components/null.hpp"
 
 namespace brica2 {
   namespace core {
     namespace test {
-      TEST(Component, Output) {
-        std::vector<int> u0({1, 2, 3});
-        std::vector<int> u1({42, 2, 3});
-        Vector<int> v0(u0, {{3}});
-        Vector<int> v1(u0, {{3}});
+      TEST(Component, ConstPipeNull) {
+        core::Vector<int> zero({3});
+        core::Vector<int> v ({1, 2, 3}, {{3}});
 
-        Component c0;
+        components::Const c0("out", v.clone());
+        components::Pipe c1("in", "out", zero);
+        components::Null c2("in", zero);
 
-        c0.make_out_port("out", v0);
+        connect(c0, "out", c1, "in");
+        connect(c1, "out", c2, "in");
 
-        v1 = c0.get_out_port("out").get_buffer();
+        ASSERT_TRUE(zero == core::Vector<int>(c0.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c1.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c1.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c2.get_in_port("in").get_buffer()));
 
-        ASSERT_TRUE(v0 == v1);
-        ASSERT_TRUE(v0 == u0);
-        ASSERT_TRUE(v1 == u0);
+        c0.input(0.0);c1.input(0.0);c2.input(0.0);
+        c0();c1();c2();
+        c0.output(0.0);c1.output(0.0);c2.output(0.0);
 
-        v1 = c0.get_output("out");
+        ASSERT_TRUE(v    == core::Vector<int>(c0.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c1.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c1.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c2.get_in_port("in").get_buffer()));
 
-        ASSERT_TRUE(v0 == v1);
-        ASSERT_TRUE(v0 == u0);
-        ASSERT_TRUE(v1 == u0);
+        c0.input(0.0);c1.input(0.0);c2.input(0.0);
+        c0();c1();c2();
+        c0.output(0.0);c1.output(0.0);c2.output(0.0);
 
-        v0[0] = 42;
+        ASSERT_TRUE(v    == core::Vector<int>(c0.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(v    == core::Vector<int>(c1.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(v    == core::Vector<int>(c1.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(zero == core::Vector<int>(c2.get_in_port("in").get_buffer()));
 
-        v1 = c0.get_out_port("out").get_buffer();
+        c0.input(0.0);c1.input(0.0);c2.input(0.0);
+        c0();c1();c2();
+        c0.output(0.0);c1.output(0.0);c2.output(0.0);
 
-        ASSERT_TRUE(v0 == v1);
-        ASSERT_TRUE(v0 == u1);
-        ASSERT_TRUE(v1 == u1);
-
-        v1 = c0.get_output("out");
-
-        ASSERT_TRUE(v0 != v1);
-        ASSERT_TRUE(v0 == u1);
-        ASSERT_TRUE(v1 == u0);
-
-        c0.output(0.0);
-
-        v1 = c0.get_out_port("out").get_buffer();
-
-        ASSERT_TRUE(v0 == v1);
-        ASSERT_TRUE(v0 == u0);
-        ASSERT_TRUE(v1 == u0);
-
-        v1 = c0.get_output("out");
-
-        ASSERT_TRUE(v0 != v1);
-        ASSERT_TRUE(v0 == u0);
-        ASSERT_TRUE(v1 == u1);
+        ASSERT_TRUE(v == core::Vector<int>(c0.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(v == core::Vector<int>(c1.get_in_port("in").get_buffer()));
+        ASSERT_TRUE(v == core::Vector<int>(c1.get_out_port("out").get_buffer()));
+        ASSERT_TRUE(v == core::Vector<int>(c2.get_in_port("in").get_buffer()));
       }
     }
   }

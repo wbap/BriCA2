@@ -36,7 +36,6 @@ namespace brica2 {
     struct Component::impl {
       Dictionary inputs;
       Dictionary outputs;
-      Dictionary buffer;
       double last_input_time = 0.0;
       double last_output_time = 0.0;
       double offset = 0.0;
@@ -48,29 +47,7 @@ namespace brica2 {
       self->offset = offset;
     }
 
-    Component::Component(const Component& other) : Unit(other), self(other.self) {}
-    
-    Component::Component(Component&& other) noexcept : Unit(other), self(other.self) {
-      other.self = nullptr;
-    }
-
     Component::~Component() {}
-    
-    Component& Component::operator =(const Component& other) {
-      Component another(other);
-      *this = std::move(another);
-      return *this;
-    }
-    
-    Component& Component::operator =(Component&& other) noexcept {
-      swap(*this, other);
-      return *this;
-    }
-    
-    void swap(Component& a, Component& b) {
-      swap(dynamic_cast<Unit&>(a), dynamic_cast<Unit&>(b));
-      std::swap(a.self, b.self);
-    }
     
     void Component::detatch() {
       std::shared_ptr<impl> other = self;
@@ -89,12 +66,6 @@ namespace brica2 {
         vector.detatch();
         self->outputs.emplace(std::pair<std::string, VectorBase>(key, vector));
       }
-    }
-
-    Component Component::clone() const {
-      Component other(*this);
-      other.detatch();
-      return other;
     }
     
     void Component::make_in_port(std::string key, const VectorBase& init) {
@@ -152,16 +123,12 @@ namespace brica2 {
         std::string key = iter->first;
         VectorBase& vector = iter->second;
         Port port = get_out_port(key);
-        port.swap_buffer(vector);
+        port.set_buffer(vector);
       }
     }
 
     void Component::operator ()() {
-      self->buffer = fire(self->inputs, self->buffer);
-    }
-
-    Dictionary& Component::fire(Dictionary& inputs, Dictionary& outputs) {
-      return outputs;
+      self->outputs = fire(self->inputs);
     }
 
     void Component::reset() {

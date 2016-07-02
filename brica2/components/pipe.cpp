@@ -32,12 +32,13 @@ namespace brica2 {
   namespace components {
     using namespace core;
 
-    Pipe::Pipe(std::string from, std::string to, VectorBase& init) : from(from), to(to) {
+    Pipe::Pipe(std::string from, std::string to, const VectorBase& init) : from(from), to(to) {
       make_in_port(from, init.clone());
       make_out_port(to, init.clone());
     }
 
-    Dictionary& Pipe::fire(Dictionary& inputs, Dictionary& outputs) {
+    Dictionary Pipe::fire(Dictionary& inputs) {
+      Dictionary outputs;
       outputs[to] = inputs[from];
       return outputs;
     }

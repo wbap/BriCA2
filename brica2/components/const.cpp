@@ -32,13 +32,16 @@ namespace brica2 {
   namespace components {
     using namespace core;
 
-    Const::Const(std::string key, VectorBase& init)
-      : key(key), value(init.clone()) {
-      make_out_port(key, init.clone());
+    Const::Const(std::string key, const VectorBase& init)
+      : key(key), value(init) {
+      VectorBase zeros(init.shape(), init.offset());
+      zeros.reallocate(init.bytes());
+      make_out_port(key, zeros);
     }
 
-    Dictionary& Const::fire(Dictionary& inputs, Dictionary& outputs) {
-      outputs[key] = value.clone();
+    Dictionary Const::fire(Dictionary& inputs) {
+      Dictionary outputs;
+      outputs[key] = value;
       return outputs;
     }
   }

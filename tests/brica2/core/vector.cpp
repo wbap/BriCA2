@@ -50,27 +50,6 @@ namespace brica2 {
       }
     }
 
-    TEST(Vector, BaseSwap) {
-      Vector<int> v0({1});
-      Vector<int> v1({1});
-      Vector<int> v2 = v1;
-
-      v0 = 42;
-
-      ASSERT_EQ(42, static_cast<int>(v0[0]));
-      ASSERT_EQ(0,  static_cast<int>(v1[0]));
-      ASSERT_EQ(0,  static_cast<int>(v2[0]));
-
-      VectorBase b0 = v0;
-      VectorBase b1 = v1;
-
-      swap(b0, b1, true);
-
-      ASSERT_EQ(0,  static_cast<int>(v0[0]));
-      ASSERT_EQ(42, static_cast<int>(v1[0]));
-      ASSERT_EQ(42, static_cast<int>(v2[0]));
-    }
-
     TEST(Vector, Equality) {
       std::vector<int> u0({1, 2, 3});
       Vector<int> v0(u0, {{3}});

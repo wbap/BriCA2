@@ -53,14 +53,14 @@ namespace brica2 {
       return other;
     }
 
-    std::list<Component> Agent::get_all_components() const {
-      std::list<Component> all_components = get_components();
+    std::list<Component*> Agent::get_all_components() const {
+      std::list<Component*> all_components = get_components();
       std::list<Module> all_submodules = get_submodules();
 
       while(all_submodules.size()) {
         Module submodule = all_submodules.front();
         all_submodules.pop_front();
-        std::list<Component> components = submodule.get_components();
+        std::list<Component*> components = submodule.get_components();
         std::list<Module> submodules = submodule.get_submodules();
         all_components.insert(all_components.end(), components.begin(), components.end());
         all_submodules.insert(all_submodules.end(), submodules.begin(), submodules.end());

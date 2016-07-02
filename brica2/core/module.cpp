@@ -31,7 +31,7 @@
 namespace brica2 {
   namespace core {
     struct Module::impl {
-      std::map<std::string, Component> components;
+      std::map<std::string, Component*> components;
       std::map<std::string, Module> submodules;
     };
     
@@ -67,9 +67,9 @@ namespace brica2 {
 
       for(auto iter = self->components.begin(); iter != self->components.end(); ++iter) {
         std::string key = iter->first;
-        Component component = iter->second;
-        component.detatch();
-        other->components.emplace(std::pair<std::string, Component>(key, component));
+        Component* component = iter->second;
+        component->detatch();
+        other->components.emplace(std::pair<std::string, Component*>(key, component));
       }
 
       for(auto iter = self->submodules.begin(); iter != self->submodules.end(); ++iter) {
@@ -88,19 +88,19 @@ namespace brica2 {
       return other;
     }
 
-    void Module::add_component(std::string key, const Component& component) {
-      self->components.emplace(std::pair<std::string, Component>(key, component));
+    void Module::add_component(std::string key, const Component* component) {
+      self->components.emplace(std::pair<std::string, Component*>(key, component));
     }
 
-    Component& Module::get_component(std::string key) const {
+    Component* Module::get_component(std::string key) const {
       return self->components.at(key);
     }
 
-    std::list<Component> Module::get_components() const {
-      std::list<Component> components;
+    std::list<Component*> Module::get_components() const {
+      std::list<Component*> components;
       for(auto iter = self->components.begin(); iter != self->components.end(); ++iter) {
         std::string key = iter->first;
-        Component component = iter->second;
+        Component* component = iter->second;
         components.push_back(component);
       }
       return components;

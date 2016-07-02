@@ -48,7 +48,7 @@ namespace brica2 {
     protected:
       double time;
       Agent agent;
-      std::list<Component> components;
+      std::list<Component*> components;
     };
   }
 }

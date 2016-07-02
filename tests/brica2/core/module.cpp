@@ -34,10 +34,16 @@
 namespace brica2 {
   namespace core {
     namespace test {
+      class MyComponent : public Component {
+        virtual Dictionary fire(Dictionary& inputs) {
+          return Dictionary();
+        }
+      };
+
       TEST(Module, Simple) {
         Module m0;
-        Component c0;
-        Component c1;
+        MyComponent c0;
+        MyComponent c1;
         Vector<int> v0({1, 2, 3}, {{3}});
         Vector<int> v1({1, 2, 3}, {{3}});
 
@@ -69,8 +75,8 @@ namespace brica2 {
         Module m0;
         Module m1;
         Module m2;
-        Component c0;
-        Component c1;
+        MyComponent c0;
+        MyComponent c1;
         Vector<int> v0({1, 2, 3}, {{3}});
         Vector<int> v1({1, 2, 3}, {{3}});
 

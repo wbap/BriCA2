@@ -84,10 +84,6 @@ namespace brica2 {
       self->buffer = buffer;
     }
 
-    void Port::swap_buffer(VectorBase& buffer) {
-      swap(self->buffer, buffer, true);
-    }
-
     void Port::connect(Port target) {
       self->target = target.self;
     }

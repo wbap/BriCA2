@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * brica2/components/pipe.hpp
+ * tests/brica2/core/agent.cpp
  *
  * @author Copyright (C) 2016 Kotone Itaya
  * @version 1.0.0
- * @created  2016/06/30 Kotone Itaya -- Created!
+ * @created  2016/07/01 Kotone Itaya -- Created!
  * @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,24 +26,13 @@
  *
  *****************************************************************************/
 
-#ifndef __BRICA2_COMPONENTS_PIPE__
-#define __BRICA2_COMPONENTS_PIPE__
-
-#include "brica2/core/component.hpp"
+#include "gtest/gtest.h"
+#include "brica2/core/agent.hpp"
 
 namespace brica2 {
-  namespace components {
-    using namespace core;
-
-    class Pipe : public Component {
-    public:
-      Pipe(std::string from, std::string to, const VectorBase& init);
-      Dictionary fire(Dictionary& inputs);
-    private:
-      std::string from;
-      std::string to;
-    };
+  namespace core {
+    namespace test {
+      
+    }
   }
 }
-
-#endif

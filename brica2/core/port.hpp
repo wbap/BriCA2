@@ -49,7 +49,6 @@ namespace brica2 {
       Port clone() const;
       VectorBase& get_buffer() const;
       void set_buffer(VectorBase& buffer);
-      void swap_buffer(VectorBase& buffer);
       void connect(Port target);
       bool sync();
     private:

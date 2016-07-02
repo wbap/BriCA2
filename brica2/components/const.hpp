@@ -37,8 +37,8 @@ namespace brica2 {
 
     class Const : public Component {
     public:
-      Const(std::string key, VectorBase& value);
-      Dictionary& fire(Dictionary& inputs, Dictionary& outputs);
+      Const(std::string key, const VectorBase& value);
+      Dictionary fire(Dictionary& inputs);
     private:
       std::string key;
       VectorBase value;

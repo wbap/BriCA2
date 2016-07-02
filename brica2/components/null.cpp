@@ -32,12 +32,12 @@ namespace brica2 {
   namespace components {
     using namespace core;
 
-    Null::Null(std::string key, VectorBase& init) {
+    Null::Null(std::string key, const VectorBase& init) {
       make_in_port(key, init.clone());
     }
 
-    Dictionary& Null::fire(Dictionary& inputs, Dictionary& outputs) {
-      return outputs;
+    Dictionary Null::fire(Dictionary& inputs) {
+      return Dictionary();
     }
   }
 }

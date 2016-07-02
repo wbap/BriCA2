@@ -96,20 +96,6 @@ namespace brica2 {
         ASSERT_EQ(v0.length(), v1.length());
         ASSERT_EQ(static_cast<int>(v0[0]), static_cast<int>(v1[0]));
       }
-
-      TEST(Port, BufferSwap) {
-        Port p0;
-        Vector<int> v0({1});
-        Vector<int> v1({1});
-
-        v0[0] = 42;
-
-        p0.set_buffer(v0);
-        p0.swap_buffer(v1);
-
-        ASSERT_EQ(0,  static_cast<int>(v0[0]));
-        ASSERT_EQ(42, static_cast<int>(v1[0]));
-      }
     }
   }
 }

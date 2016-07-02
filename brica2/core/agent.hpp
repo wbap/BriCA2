@@ -37,6 +37,7 @@
 namespace brica2 {
   namespace core {
     class Agent : public Module {
+      friend class Scheduler;
     public:
       Agent();
       Agent(const Agent& other);
@@ -44,7 +45,8 @@ namespace brica2 {
       Agent& operator =(const Agent& other);
       Agent& operator =(Agent&& other) noexcept;
       Agent clone() const;
-      std::list<Component> get_all_components() const;
+    private:
+      std::list<Component*> get_all_components() const;
     };
   }
 }

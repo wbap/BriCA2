@@ -35,6 +35,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <cassert>
 
 namespace brica2 {
   namespace core {
@@ -42,30 +43,118 @@ namespace brica2 {
 
     class Component : public Unit {
     public:
-      Component(double interval=1.0, double offset=0.0);
-      Component(const Component& other);
-      Component(Component&& other) noexcept;
-      ~Component();
-      Component& operator =(const Component& other);
-      Component& operator =(Component&& other) noexcept;
-      friend void swap(Component& a, Component& b);
-      void detatch();
-      Component clone() const;
-      virtual void make_in_port(std::string key, const VectorBase& init) final;
-      virtual void remove_in_port(std::string) final;
-      virtual void make_out_port(std::string key, const VectorBase& init) final;
-      virtual void remove_out_port(std::string) final;
-      VectorBase get_input(std::string key) const;
-      void set_input(std::string key, const VectorBase& vector);
-      VectorBase get_output(std::string key) const;
-      void set_output(std::string key, const VectorBase& vector);
-      void input(double time);
-      void output(double time);
-      void operator ()();
-      virtual Dictionary& fire(Dictionary& inputs, Dictionary& outputs);
-      void reset();
+      Component(double interval=1.0, double offset=0.0) : self(std::make_shared<impl>()) {
+        self->interval = interval;
+        self->offset = offset;
+      }
+
+      ~Component() {}
+
+      void detatch() {
+        std::shared_ptr<impl> other = self;
+        self = std::make_shared<impl>();
+
+        for(auto iter = other->inputs.begin(); iter != other->inputs.end(); ++iter) {
+          std::string key = iter->first;
+          VectorBase vector = iter->second;
+          vector.detatch();
+          self->inputs.emplace(std::pair<std::string, VectorBase>(key, vector));
+        }
+
+        for(auto iter = other->outputs.begin(); iter != other->outputs.end(); ++iter) {
+          std::string key = iter->first;
+          VectorBase vector = iter->second;
+          vector.detatch();
+          self->outputs.emplace(std::pair<std::string, VectorBase>(key, vector));
+        }
+      }
+
+      virtual void make_in_port(std::string key, const VectorBase& init) final {
+        Unit::make_in_port(key, init);
+        self->inputs.emplace(std::pair<std::string, VectorBase>(key, init));
+      }
+
+      virtual void remove_in_port(std::string key) final {
+        Unit::remove_in_port(key);
+        self->inputs.erase(key);
+      }
+
+      virtual void make_out_port(std::string key, const VectorBase& init) final {
+        Unit::make_out_port(key, init);
+        self->outputs.emplace(std::pair<std::string, VectorBase>(key, init));
+      }
+
+      virtual void remove_out_port(std::string key) final {
+        Unit::remove_out_port(key);
+      }
+
+      VectorBase get_input(std::string key) const {
+        return self->inputs.at(key);
+      }
+
+      void set_input(std::string key, const VectorBase& vector) {
+        self->inputs.at(key) = vector;
+      }
+
+      VectorBase get_output(std::string key) const {
+        return self->outputs.at(key);
+      }
+
+      void set_output(std::string key, const VectorBase& vector) {
+        self->outputs.at(key) = vector;
+      }
+
+      void input(double time) {
+        assert(self->last_input_time <= time);
+        self->last_input_time = time;
+        for(auto iter = self->inputs.begin(); iter != self->inputs.end(); ++iter) {
+          std::string key = iter->first;
+          VectorBase& vector = iter->second;
+          Port port = get_in_port(key);
+          port.sync();
+          vector = port.get_buffer();
+        }
+      }
+
+      void output(double time) {
+        assert(self->last_output_time <= time);
+        self->last_output_time = time;
+        for(auto iter = self->outputs.begin(); iter != self->outputs.end(); ++iter) {
+          std::string key = iter->first;
+          VectorBase& vector = iter->second;
+          Port port = get_out_port(key);
+          port.set_buffer(vector);
+        }
+      }
+
+      void call() {
+        self->outputs = fire(self->inputs);
+      }
+
+      void operator ()() {
+        self->outputs = fire(self->inputs);
+      }
+
+      virtual Dictionary fire(Dictionary& inputs)=0;
+
+      void reset() {
+        self->last_input_time = 0.0;
+        self->last_output_time = 0.0;
+      }
+
+      template<class C>
+      operator C&() {
+        return dynamic_cast<C&>(*this);
+      }
     private:
-      struct impl; std::shared_ptr<impl> self;
+      struct impl {
+        Dictionary inputs;
+        Dictionary outputs;
+        double last_input_time = 0.0;
+        double last_output_time = 0.0;
+        double offset = 0.0;
+        double interval = 1.0;
+      }; std::shared_ptr<impl> self;
     };
   }
 }
