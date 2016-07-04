@@ -59,10 +59,11 @@ namespace brica2 {
         self->owner = true;
       }
 
-      VectorBase(const char* buffer, shape_t shape)
+      VectorBase(const char* buffer, shape_t shape, std::size_t bytes)
         : self(std::make_shared<impl>())
       {
         self->shape = shape;
+        self->bytes = bytes;
         self->offset = 0;
         delete[] self->buffer;
         self->buffer = const_cast<char*>(buffer);

@@ -30,6 +30,7 @@
 #define __BRICA2_CORE_UTILS__
 
 #include <list>
+#include <memory>
 
 namespace brica2 {
   namespace core {

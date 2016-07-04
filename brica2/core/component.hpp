@@ -104,7 +104,7 @@ namespace brica2 {
         self->outputs.at(key) = vector;
       }
 
-      void input(double time) {
+      virtual void input(double time) {
         assert(self->last_input_time <= time);
         self->last_input_time = time;
         for(auto iter = self->inputs.begin(); iter != self->inputs.end(); ++iter) {
@@ -116,7 +116,7 @@ namespace brica2 {
         }
       }
 
-      void output(double time) {
+      virtual void output(double time) {
         assert(self->last_output_time <= time);
         self->last_output_time = time;
         for(auto iter = self->outputs.begin(); iter != self->outputs.end(); ++iter) {
@@ -125,10 +125,6 @@ namespace brica2 {
           Port port = get_out_port(key);
           port.set_buffer(vector);
         }
-      }
-
-      void call() {
-        self->outputs = fire(self->inputs);
       }
 
       void operator ()() {

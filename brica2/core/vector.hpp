@@ -83,7 +83,7 @@ namespace brica2 {
       }
 
       Vector(const char* buffer, shape_t shape)
-        : VectorBase(buffer, shape)
+        : VectorBase(buffer, shape, utils::accumulate(_shape) * type_size)
         , _shape(shape)
         , _size(utils::accumulate(_shape))
         , _rank(shape.size())

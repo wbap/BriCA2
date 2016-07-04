@@ -35,14 +35,14 @@ namespace brica2 {
 
     double VirtualTimeSyncScheduler::step() {
       for(auto iter = components.begin(); iter != components.end(); ++iter) {
-        (*iter)->input(time);
-        (*iter)->call();
+        (*(*iter)).input(time);
+        (*(*iter))();
       }
 
       time += interval;
 
       for(auto iter = components.begin(); iter != components.end(); ++iter) {
-        (*iter)->output(time);
+        (*(*iter)).output(time);
       }
 
       return time;
