@@ -27,6 +27,7 @@
  *****************************************************************************/
 
 #include "brica2/schedulers/virtual_time_sync_scheduler.hpp"
+#include <iostream>
 
 namespace brica2 {
   namespace schedulers {

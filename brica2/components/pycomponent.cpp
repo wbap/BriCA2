@@ -27,7 +27,6 @@
  *****************************************************************************/
 
 #include "brica2/components/pycomponent.hpp"
-#include <iostream>
 
 namespace brica2 {
   namespace components {

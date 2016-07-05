@@ -7,7 +7,7 @@ if (test)
 
   file(COPY python DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
-  add_subdirectory(../lib/gtest-1.7.0 "${CMAKE_CURRENT_BINARY_DIR}/lib")
+  add_subdirectory(../lib/gtest-1.7.0 "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0")
 
   enable_testing()
 
@@ -34,4 +34,20 @@ if (test)
                                      brica2-core brica2-schedulers brica2-components
                                      ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
   add_test(NAME brica2-test COMMAND runUnitTests)
+endif()
+
+if (benchmark)
+  add_subdirectory(../lib/benchmark-master "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark-master")
+
+  include_directories(${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
+
+  ##############
+  # Benchmarks
+  ##############
+
+  add_executable(vector_bm brica2/core/vector_bm.cpp)
+  add_executable(const_python_null_bm benchmark.cpp)
+
+  target_link_libraries(vector_bm benchmark brica2-core brica2-schedulers brica2-components)
+  target_link_libraries(const_python_null_bm benchmark brica2-core brica2-schedulers brica2-components)
 endif()
