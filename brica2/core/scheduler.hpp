@@ -31,7 +31,7 @@
 
 #include "brica2/core/agent.hpp"
 
-#include <list>
+#include <vector>
 #include <memory>
 
 namespace brica2 {
@@ -48,7 +48,7 @@ namespace brica2 {
     protected:
       double time;
       Agent agent;
-      std::list<Component*> components;
+      std::vector<Component*> components;
     };
   }
 }

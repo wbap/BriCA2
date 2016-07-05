@@ -32,7 +32,7 @@
 #include "brica2/core/unit.hpp"
 #include "brica2/core/component.hpp"
 
-#include <list>
+#include <vector>
 #include <memory>
 
 namespace brica2 {
@@ -99,8 +99,8 @@ namespace brica2 {
       }
 
     private:
-      std::list<Component*> get_components() const {
-        std::list<Component*> components;
+      std::vector<Component*> get_components() const {
+        std::vector<Component*> components;
         for(auto iter = self->components.begin(); iter != self->components.end(); ++iter) {
           Component* component = iter->second;
           components.push_back(component);
@@ -122,8 +122,8 @@ namespace brica2 {
       }
 
     private:
-      std::list<Module> get_submodules() const {
-        std::list<Module> submodules;
+      std::vector<Module> get_submodules() const {
+        std::vector<Module> submodules;
         for(auto iter = self->submodules.begin(); iter != self->submodules.end(); ++iter) {
           std::string key = iter->first;
           Module submodule = iter->second;

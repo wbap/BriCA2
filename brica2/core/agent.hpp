@@ -46,7 +46,7 @@ namespace brica2 {
       Agent& operator =(Agent&& other) noexcept;
       Agent clone() const;
     private:
-      std::list<Component*> get_all_components() const;
+      std::vector<Component*> get_all_components() const;
     };
   }
 }

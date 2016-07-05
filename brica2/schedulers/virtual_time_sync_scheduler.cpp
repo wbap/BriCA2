@@ -27,7 +27,6 @@
  *****************************************************************************/
 
 #include "brica2/schedulers/virtual_time_sync_scheduler.hpp"
-#include <iostream>
 
 namespace brica2 {
   namespace schedulers {
@@ -35,15 +34,15 @@ namespace brica2 {
       : Scheduler(agent), interval(interval) {}
 
     double VirtualTimeSyncScheduler::step() {
-      for(auto iter = components.begin(); iter != components.end(); ++iter) {
-        (*(*iter)).input(time);
-        (*(*iter))();
+      for(std::size_t i = 0; i < components.size(); ++i) {
+        (*components[i]).input(time);
+        (*components[i])();
       }
 
       time += interval;
 
-      for(auto iter = components.begin(); iter != components.end(); ++iter) {
-        (*(*iter)).output(time);
+      for(std::size_t i = 0; i < components.size(); ++i) {
+        (*components[i]).output(time);
       }
 
       return time;
