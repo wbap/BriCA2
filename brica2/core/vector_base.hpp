@@ -31,6 +31,7 @@
 
 #include <list>
 #include <memory>
+#include <cstring>
 
 namespace brica2 {
   namespace core {
@@ -130,7 +131,7 @@ namespace brica2 {
         self->offset = other->offset;
         self->owner = true;
         reallocate(self->bytes);
-        std::memcpy(self->buffer, other->buffer, self->bytes);
+        memcpy(self->buffer, other->buffer, self->bytes);
       }
 
       VectorBase clone() const

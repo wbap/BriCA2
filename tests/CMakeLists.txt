@@ -46,8 +46,8 @@ if (benchmark)
   ##############
 
   add_executable(vector_bm brica2/core/vector_bm.cpp)
-  add_executable(const_python_null_bm benchmark.cpp)
+  add_executable(main_bm benchmark.cpp)
 
   target_link_libraries(vector_bm benchmark brica2-core brica2-schedulers brica2-components)
-  target_link_libraries(const_python_null_bm benchmark brica2-core brica2-schedulers brica2-components)
+  target_link_libraries(main_bm benchmark brica2-core brica2-schedulers brica2-components)
 endif()

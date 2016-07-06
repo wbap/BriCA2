@@ -43,12 +43,12 @@ namespace brica2 {
 
     class Component : public Unit {
     public:
-      Component(double interval=1.0, double offset=0.0) : self(std::make_shared<impl>()) {
+      Component(double interval=1.0, double offset=0.0) : Unit(), self(std::make_shared<impl>()) {
         self->interval = interval;
         self->offset = offset;
       }
 
-      ~Component() {}
+      virtual ~Component() {}
 
       void detatch() {
         std::shared_ptr<impl> other = self;

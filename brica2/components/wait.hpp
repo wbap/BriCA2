@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * brica2/schedulers/virtual_time_sync_scheduler.hpp
+ * brica2/components/wait.hpp
  *
  * @author Copyright (C) 2016 Kotone Itaya
  * @version 1.0.0
- * @created  2016/07/01 Kotone Itaya -- Created!
+ * @created  2016/07/05 Kotone Itaya -- Created!
  * @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,20 +26,24 @@
  *
  *****************************************************************************/
 
-#ifndef __BRICA2_SCHEDULERS_VIRTUAL_TIME_SYNC_SCHEDULER__
-#define __BRICA2_SCHEDULERS_VIRTUAL_TIME_SYNC_SCHEDULER__
+#ifndef __BRICA2_COMPONENTS_WAIT__
+#define __BRICA2_COMPONENTS_WAIT__
 
-#include "brica2/core/scheduler.hpp"
+#include "brica2/core/component.hpp"
 
 namespace brica2 {
-  namespace schedulers {
-    class VirtualTimeSyncScheduler : public core::Scheduler {
+  namespace components {
+    using namespace core;
+
+    class Wait : public Component {
     public:
-      VirtualTimeSyncScheduler(core::Agent agent, double interval=1.0, std::size_t threads=0);
-      virtual double step();
+      Wait(std::string from, std::string to, VectorBase& init, std::size_t usec);
+      virtual ~Wait();
+      Dictionary fire(Dictionary& inputs);
     private:
-      double interval;
-      std::size_t threads;
+      std::string from;
+      std::string to;
+      std::size_t usec;
     };
   }
 }

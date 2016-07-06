@@ -42,11 +42,12 @@ namespace brica2 {
       Agent();
       Agent(const Agent& other);
       Agent(Agent&& other) noexcept;
+      virtual ~Agent();
       Agent& operator =(const Agent& other);
       Agent& operator =(Agent&& other) noexcept;
       Agent clone() const;
     private:
-      std::vector<Component*> get_all_components() const;
+      std::vector<std::shared_ptr<Component> > get_all_components() const;
     };
   }
 }

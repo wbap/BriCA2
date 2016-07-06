@@ -28,21 +28,85 @@
 
 #include "brica2/schedulers/virtual_time_sync_scheduler.hpp"
 
+#include <functional>
+#include <thread>
+#include <queue>
+
 namespace brica2 {
   namespace schedulers {
-    VirtualTimeSyncScheduler::VirtualTimeSyncScheduler(core::Agent agent, double interval)
-      : Scheduler(agent), interval(interval) {}
+    VirtualTimeSyncScheduler::VirtualTimeSyncScheduler(core::Agent agent, double interval, std::size_t threads)
+      : Scheduler(agent), interval(interval), threads(threads) {}
 
     double VirtualTimeSyncScheduler::step() {
-      for(std::size_t i = 0; i < components.size(); ++i) {
-        (*components[i]).input(time);
-        (*components[i])();
+      const std::size_t n_components = components.size();
+
+      std::vector<std::queue<std::function<void(void)> > > input_queue(threads);
+      std::vector<std::queue<std::function<void(void)> > > output_queue(threads);
+
+      std::queue<std::thread> thread_queue;
+
+      for(std::size_t i = 0; i < n_components; ++i) {
+        std::shared_ptr<core::Component> component = components[i];
+        if(threads) {
+          std::function<void(void)> input = [this, component]() mutable {
+            (*component).input(time);
+            (*component)();
+          };
+          input_queue[i%threads].push(input);
+        } else {
+          (*component).input(time);
+          (*component)();
+        }
+      }
+
+      if(threads) {
+        for(std::size_t i = 0; i < threads; ++i) {
+          std::queue<std::function<void(void)> > queue = input_queue[i];
+          std::function<void(void)> input = [queue]() mutable {
+            while(!queue.empty()) {
+              queue.front()();
+              queue.pop();
+            }
+          };
+          thread_queue.push(std::thread(input));
+        }
+
+        while(!thread_queue.empty()) {
+          thread_queue.front().join();
+          thread_queue.pop();
+        }
       }
 
       time += interval;
 
-      for(std::size_t i = 0; i < components.size(); ++i) {
-        (*components[i]).output(time);
+      for(std::size_t i = 0; i < n_components; ++i) {
+        std::shared_ptr<core::Component> component = components[i];
+        if(threads) {
+          std::function<void(void)> output = [this, component]() mutable {
+            (*component).output(time);
+          };
+          output_queue[i%threads].push(output);
+        } else {
+          (*component).output(time);
+        }
+      }
+
+      if(threads) {
+        for(std::size_t i = 0; i < threads; ++i) {
+          std::queue<std::function<void(void)> > queue = output_queue[i];
+          std::function<void(void)> output = [queue]() mutable {
+            while(!queue.empty()) {
+              queue.front()();
+              queue.pop();
+            }
+          };
+          thread_queue.push(std::thread(output));
+        }
+
+        while(!thread_queue.empty()) {
+          thread_queue.front().join();
+          thread_queue.pop();
+        }
       }
 
       return time;

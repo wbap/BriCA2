@@ -1,5 +1,5 @@
-set(CPP_FILES const.cpp pipe.cpp null.cpp pycomponent.cpp)
-set(HPP_FILES const.hpp pipe.hpp null.hpp pycomponent.hpp)
+set(CPP_FILES const.cpp pipe.cpp null.cpp wait.cpp pycomponent.cpp)
+set(HPP_FILES const.hpp pipe.hpp null.hpp wait.hpp pycomponent.hpp)
 
 find_package(Boost COMPONENTS python REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})

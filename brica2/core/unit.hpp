@@ -42,7 +42,7 @@ namespace brica2 {
       Unit();
       Unit(const Unit& other);
       Unit(Unit&& other) noexcept;
-      ~Unit();
+      virtual ~Unit();
       Unit& operator =(const Unit& other);
       Unit& operator =(Unit&& other) noexcept;
       friend void swap(Unit& a, Unit& b);

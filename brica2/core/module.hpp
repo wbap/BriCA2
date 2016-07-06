@@ -46,7 +46,7 @@ namespace brica2 {
 
       Module(Module&& other) noexcept : Unit(other), self(other.self) { other.self = nullptr; }
 
-      ~Module() {}
+      virtual ~Module() {}
 
       Module& operator =(const Module& other) {
         Module another(other);
@@ -70,9 +70,9 @@ namespace brica2 {
 
         for(auto iter = self->components.begin(); iter != self->components.end(); ++iter) {
           std::string key = iter->first;
-          Component* component = iter->second;
+          std::shared_ptr<Component> component = iter->second;
           component->detatch();
-          other->components.emplace(std::pair<std::string, Component*>(key, component));
+          other->components.emplace(std::pair<std::string, std::shared_ptr<Component> >(key, component));
         }
 
         for(auto iter = self->submodules.begin(); iter != self->submodules.end(); ++iter) {
@@ -91,7 +91,8 @@ namespace brica2 {
 
       template<class C>
       void add_component(std::string key, const C& component) {
-        self->components.emplace(std::pair<std::string, Component*>(key, const_cast<Component*>(dynamic_cast<const Component*>(&component))));
+        std::shared_ptr<Component> base = std::dynamic_pointer_cast<Component>(std::shared_ptr<C>(new C(component)));
+        self->components.emplace(std::pair<std::string, std::shared_ptr<Component>>(key, base));
       }
 
       Component& get_component(std::string key) {
@@ -99,10 +100,10 @@ namespace brica2 {
       }
 
     private:
-      std::vector<Component*> get_components() const {
-        std::vector<Component*> components;
+      std::vector<std::shared_ptr<Component> > get_components() const {
+        std::vector<std::shared_ptr<Component> > components;
         for(auto iter = self->components.begin(); iter != self->components.end(); ++iter) {
-          Component* component = iter->second;
+          std::shared_ptr<Component> component = iter->second;
           components.push_back(component);
         }
         return components;
@@ -139,7 +140,7 @@ namespace brica2 {
 
     private:
       struct impl {
-        std::map<std::string, Component*> components;
+        std::map<std::string, std::shared_ptr<Component> > components;
         std::map<std::string, Module> submodules;
       }; std::shared_ptr<impl> self;
     };
