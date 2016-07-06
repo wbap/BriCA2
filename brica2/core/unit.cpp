@@ -28,13 +28,13 @@
 
 #include "brica2/core/unit.hpp"
 
-#include <map>
+#include <unordered_map>
 
 namespace brica2 {
   namespace core {
     struct Unit::impl {
-      std::map<std::string, Port> in_ports;
-      std::map<std::string, Port> out_ports;
+      std::unordered_map<std::string, Port> in_ports;
+      std::unordered_map<std::string, Port> out_ports;
     };
     
     Unit::Unit() : self(std::make_shared<impl>()) {}

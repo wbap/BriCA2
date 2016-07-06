@@ -32,14 +32,14 @@
 #include "brica2/core/vector_base.hpp"
 #include "brica2/core/unit.hpp"
 
-#include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <cassert>
 
 namespace brica2 {
   namespace core {
-    using Dictionary = std::map<std::string, VectorBase>;
+    using Dictionary = std::unordered_map<std::string, VectorBase>;
 
     class Component : public Unit {
     public:

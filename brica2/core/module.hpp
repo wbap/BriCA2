@@ -32,8 +32,9 @@
 #include "brica2/core/unit.hpp"
 #include "brica2/core/component.hpp"
 
-#include <vector>
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace brica2 {
   namespace core {
@@ -140,8 +141,8 @@ namespace brica2 {
 
     private:
       struct impl {
-        std::map<std::string, std::shared_ptr<Component> > components;
-        std::map<std::string, Module> submodules;
+        std::unordered_map<std::string, std::shared_ptr<Component> > components;
+        std::unordered_map<std::string, Module> submodules;
       }; std::shared_ptr<impl> self;
     };
   }
