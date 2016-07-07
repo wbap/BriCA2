@@ -42,11 +42,6 @@ namespace brica2 {
     class PyComponent : public Component {
     public:
       PyComponent(py::object component);
-      PyComponent(const PyComponent& other);
-      PyComponent(PyComponent&& other) noexcept;
-      PyComponent& operator =(const PyComponent& other);
-      PyComponent& operator =(PyComponent&& other) noexcept;
-      friend void swap(PyComponent& a, PyComponent& b);
       virtual Dictionary fire(Dictionary& inputs);
     private:
       struct impl; std::shared_ptr<impl> self;

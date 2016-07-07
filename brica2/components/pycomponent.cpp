@@ -78,27 +78,6 @@ namespace brica2 {
       self->fire = self->component.attr("fire");
     }
     
-    PyComponent::PyComponent(const PyComponent& other) : self(other.self) {}
-    
-    PyComponent::PyComponent(PyComponent&& other) noexcept : self(other.self) {
-      other.self = nullptr;
-    }
-    
-    PyComponent& PyComponent::operator =(const PyComponent& other) {
-      PyComponent another(other);
-      *this = std::move(another);
-      return *this;
-    }
-    
-    PyComponent& PyComponent::operator =(PyComponent&& other) noexcept {
-      swap(*this, other);
-      return *this;
-    }
-
-    void swap(PyComponent& a, PyComponent& b) {
-      std::swap(a.self, b.self);
-    }
-
     Dictionary PyComponent::fire(Dictionary& inputs) {
       Dictionary outputs;
       py::dict input_dict;
