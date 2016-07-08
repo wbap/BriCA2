@@ -57,13 +57,13 @@ namespace brica2 {
 
     std::vector<std::shared_ptr<Component> > Agent::get_all_components() const {
       std::vector<std::shared_ptr<Component> > all_components = get_components();
-      std::vector<Module> all_submodules = get_submodules();
+      std::vector<std::shared_ptr<Module> > all_submodules = get_submodules();
 
       while(all_submodules.size()) {
-        Module submodule = all_submodules.front();
+        std::shared_ptr<Module> submodule = all_submodules.front();
         all_submodules.erase(all_submodules.begin());
-        std::vector<std::shared_ptr<Component> > components = submodule.get_components();
-        std::vector<Module> submodules = submodule.get_submodules();
+        std::vector<std::shared_ptr<Component> > components = submodule->get_components();
+        std::vector<std::shared_ptr<Module> > submodules = submodule->get_submodules();
         all_components.insert(all_components.end(), components.begin(), components.end());
         all_submodules.insert(all_submodules.end(), submodules.begin(), submodules.end());
       }

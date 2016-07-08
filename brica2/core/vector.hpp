@@ -258,20 +258,9 @@ namespace brica2 {
       const T* values() const
       { return reinterpret_cast<T*>(self->buffer); }
 
-      friend bool operator ==(Vector& a, Vector& b) {
-        if(a._shape != b._shape) return false;
-        if(a._offset != b._offset) return false;
-        for(std::size_t i = 0; i < a._size; ++i) {
-          if(reinterpret_cast<T*>(a.self->buffer[i]) != reinterpret_cast<T*>(b.self->buffer[i])) return false;
-        }
-        return true;
-      }
-      friend bool operator !=(Vector& a, Vector& b) { return !(a == b); }
-      friend bool operator ==(Vector& a, VectorBase& b) { return a == Vector(b); }
-      friend bool operator !=(Vector& a, VectorBase& b) { return !(a == b); }
-      friend bool operator ==(VectorBase& a, Vector& b) { return b == a; }
-      friend bool operator !=(VectorBase& a, Vector& b) { return !(a == b); }
+
       friend bool operator ==(Vector& a, std::vector<T> b) {
+        Vector c = Vector(b, a._shape);
         for(std::size_t i = 0; i < a._length; ++i) {
           if(a[i] != b[i]) return false;
         }

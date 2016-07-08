@@ -147,6 +147,18 @@ namespace brica2 {
         return Vector<T>(*this);
       }
 
+      friend bool operator ==(VectorBase& a, VectorBase& b) {
+        if(a.self->shape != b.self->shape) return false;
+        if(a.self->offset != b.self->offset) return false;
+        if(a.self->bytes != b.self->bytes) return false;
+        for(std::size_t i = 0; i < a.self->bytes; ++i) {
+          if(a.self->buffer[i] != b.self->buffer[i]) return false;
+        }
+        return true;
+      }
+
+      friend bool operator !=(VectorBase& a, VectorBase& b) { return !(a == b); }
+
     private:
       struct impl {
         impl() : buffer(new char[1]), shape({}), bytes(1), offset(0), owner(true) {}

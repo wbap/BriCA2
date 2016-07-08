@@ -78,9 +78,9 @@ namespace brica2 {
 
         for(auto iter = self->submodules.begin(); iter != self->submodules.end(); ++iter) {
           std::string key = iter->first;
-          Module submodule = iter->second;
-          submodule.detatch();
-          other->submodules.emplace(std::pair<std::string, Module>(key, submodule));
+          std::shared_ptr<Module> submodule = iter->second;
+          submodule->detatch();
+          other->submodules.emplace(std::pair<std::string, std::shared_ptr<Module> >(key, submodule));
         }
       }
 
@@ -116,19 +116,19 @@ namespace brica2 {
       }
 
       void add_submodule(std::string key, const Module& submodule) {
-        self->submodules.emplace(std::pair<std::string, Module>(key, submodule));
+        self->submodules.emplace(std::pair<std::string, std::shared_ptr<Module> >(key, std::shared_ptr<Module>(new Module(submodule))));
       }
 
       Module& get_submodule(std::string key) const {
-        return self->submodules.at(key);
+        return *(self->submodules.at(key));
       }
 
     private:
-      std::vector<Module> get_submodules() const {
-        std::vector<Module> submodules;
+      std::vector<std::shared_ptr<Module> > get_submodules() const {
+        std::vector<std::shared_ptr<Module> > submodules;
         for(auto iter = self->submodules.begin(); iter != self->submodules.end(); ++iter) {
           std::string key = iter->first;
-          Module submodule = iter->second;
+          std::shared_ptr<Module> submodule = iter->second;
           submodules.push_back(submodule);
         }
         return submodules;
@@ -142,7 +142,7 @@ namespace brica2 {
     private:
       struct impl {
         std::unordered_map<std::string, std::shared_ptr<Component> > components;
-        std::unordered_map<std::string, Module> submodules;
+        std::unordered_map<std::string, std::shared_ptr<Module> > submodules;
       }; std::shared_ptr<impl> self;
     };
   }

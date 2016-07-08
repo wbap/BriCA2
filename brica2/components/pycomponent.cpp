@@ -67,6 +67,11 @@ namespace brica2 {
       return VectorBase(b, s, bytes);
     }
 
+    struct PyVectorWrapper {
+      py::object pyvector;
+      VectorBase vector;
+    };
+
     struct PyComponent::impl {
       py::object component;
       py::object fire;
@@ -91,8 +96,9 @@ namespace brica2 {
       py::dict output_dict = py::extract<py::dict>(self->fire(input_dict));
       py::list output_keys = output_dict.keys();
 
-      for(std::size_t i = 0; i < py::len(output_dict); ++i) {
-        std::string key = py::extract<std::string>(output_keys[i]);
+      for(std::size_t i = 0; i < py::len(output_keys); ++i) {
+        py::object str = output_keys[i];
+        std::string key = std::string(py::extract<char*>(str));
         VectorBase vector = py2vector(output_dict[key]);
         outputs.emplace(std::pair<std::string, VectorBase>(key, vector));
       }
