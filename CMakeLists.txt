@@ -9,7 +9,7 @@ set(BRICA2_VERSION_MAJOR 1)
 set(BRICA2_VERSION_MINOR 0)
 set(BRICA2_VERSION_PATCH 0)
 
-add_definitions("-std=c++14")
+add_definitions("-std=c++11")
 
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
