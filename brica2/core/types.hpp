@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * brica2/core/utils.hpp
+ * brica2/core/types.hpp
  *
  * @author Copyright (C) 2016 Kotone Itaya
  * @version 1.0.0
- * @created  2016/06/29 Kotone Itaya -- Created!
+ * @created  2016/07/14 Kotone Itaya -- Created!
  * @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,27 +26,14 @@
  *
  *****************************************************************************/
 
-#ifndef __BRICA2_CORE_UTILS__
-#define __BRICA2_CORE_UTILS__
-
-#include <boost/python.hpp>
-
-#include "brica2/core/types.hpp"
+#ifndef __BRICA2_CORE_TYPES__
+#define __BRICA2_CORE_TYPES__
 
 #include <list>
-#include <memory>
 
 namespace brica2 {
   namespace core {
-    namespace utils {
-      namespace py = boost::python;
-
-      std::size_t accumulate(std::list<std::size_t> shape);
-
-      py::object buffer2py(const char* buffer, std::size_t bytes);
-
-      py::tuple shape2py(shape_t shape);
-    }
+    using shape_t = std::list<std::size_t>;
   }
 }
 

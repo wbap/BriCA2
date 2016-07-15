@@ -29,6 +29,7 @@
 #ifndef __BRICA2_CORE_VECTOR__
 #define __BRICA2_CORE_VECTOR__
 
+#include "brica2/core/types.hpp"
 #include "brica2/core/vector_base.hpp"
 #include "brica2/core/utils.hpp"
 
@@ -45,7 +46,7 @@ namespace brica2 {
       friend class Vector;
     public:
       Vector(std::vector<T> values, shape_t shape)
-        : VectorBase(shape, 0)
+        : VectorBase(shape, 0, getdtype<T>())
         , _shape(shape)
         , _size(utils::accumulate(_shape))
         , _rank(_shape.size())
@@ -59,7 +60,7 @@ namespace brica2 {
       }
 
       Vector(shape_t shape, std::size_t offset=0)
-        : VectorBase(shape, offset)
+        : VectorBase(shape, offset, getdtype<T>())
         , _shape(shape)
         , _size(utils::accumulate(_shape))
         , _rank(_shape.size())
@@ -83,7 +84,7 @@ namespace brica2 {
       }
 
       Vector(const char* buffer, shape_t shape)
-        : VectorBase(buffer, shape, utils::accumulate(_shape) * type_size)
+        : VectorBase(buffer, shape, utils::accumulate(_shape) * type_size, getdtype<T>())
         , _shape(shape)
         , _size(utils::accumulate(_shape))
         , _rank(shape.size())

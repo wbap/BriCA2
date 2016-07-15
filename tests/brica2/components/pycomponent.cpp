@@ -59,6 +59,16 @@ namespace brica2 {
 
           ASSERT_TRUE(v1 == Vector<int>(test.get_in_port("test").get_buffer()));
           ASSERT_TRUE(v2 == Vector<int>(test.get_out_port("test").get_buffer()));
+
+          Vector<int> v3 = test.get_out_port("test").get_buffer();
+
+          test.input(0.0);
+          test();
+          test.output(0.0);
+
+          ASSERT_TRUE(v1 == Vector<int>(test.get_in_port("test").get_buffer()));
+          ASSERT_TRUE(v2 == Vector<int>(test.get_out_port("test").get_buffer()));
+          ASSERT_TRUE(v2 == v3);
         } catch(const py::error_already_set&) {
           PyErr_Print();
         }

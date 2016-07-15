@@ -29,39 +29,61 @@
 #ifndef __BRICA2_CORE_VECTOR_BASE__
 #define __BRICA2_CORE_VECTOR_BASE__
 
+#include <boost/python.hpp>
+
+#include "brica2/core/types.hpp"
+#include "brica2/core/utils.hpp"
+
 #include <list>
 #include <memory>
 #include <cstring>
 
 namespace brica2 {
   namespace core {
+    namespace py = boost::python;
+
     template<typename T>
     class Vector;
 
-    using shape_t = std::list<std::size_t>;
+    template<typename T> static constexpr std::string getdtype();
+
+    template<> std::string getdtype<char     >() { return "int" + std::to_string(sizeof(char     ) * CHAR_BIT); }
+    template<> std::string getdtype<short    >() { return "int" + std::to_string(sizeof(short    ) * CHAR_BIT); }
+    template<> std::string getdtype<int      >() { return "int" + std::to_string(sizeof(int      ) * CHAR_BIT); }
+    template<> std::string getdtype<long     >() { return "int" + std::to_string(sizeof(long     ) * CHAR_BIT); }
+    template<> std::string getdtype<long long>() { return "int" + std::to_string(sizeof(long long) * CHAR_BIT); }
+
+    template<> std::string getdtype<unsigned char     >() { return "uint" + std::to_string(sizeof(unsigned char     ) * CHAR_BIT); }
+    template<> std::string getdtype<unsigned short    >() { return "uint" + std::to_string(sizeof(unsigned short    ) * CHAR_BIT); }
+    template<> std::string getdtype<unsigned int      >() { return "uint" + std::to_string(sizeof(unsigned int      ) * CHAR_BIT); }
+    template<> std::string getdtype<unsigned long     >() { return "uint" + std::to_string(sizeof(unsigned long     ) * CHAR_BIT); }
+    template<> std::string getdtype<unsigned long long>() { return "uint" + std::to_string(sizeof(unsigned long long) * CHAR_BIT); }
+
+    template<> std::string getdtype<float>() { return "float" + std::to_string(sizeof(float) * CHAR_BIT); }
+    template<> std::string getdtype<double>() { return "float" + std::to_string(sizeof(double) * CHAR_BIT); }
 
     class VectorBase {
       template<typename U>
       friend class Vector;
     public:
-      VectorBase()
-        : self(std::make_shared<impl>())
+      VectorBase(std::string dtype=getdtype<int>())
+        : self(std::make_shared<impl>(dtype))
       {
         self->shape = {};
         self->offset = 0;
         self->owner = true;
       }
 
-      VectorBase(shape_t shape, std::size_t offset)
-        : self(std::make_shared<impl>())
+      VectorBase(shape_t shape, std::size_t offset, std::string dtype=getdtype<int>())
+        : self(std::make_shared<impl>(dtype))
       {
         self->shape = shape;
         self->offset = offset;
         self->owner = true;
       }
 
-      VectorBase(const char* buffer, shape_t shape, std::size_t bytes)
-        : self(std::make_shared<impl>())
+      VectorBase(const char* buffer, shape_t shape, std::size_t bytes, std::string dtype=getdtype<int>())
+        : self(std::make_shared<impl>(dtype))
       {
         self->shape = shape;
         self->bytes = bytes;
@@ -71,9 +93,32 @@ namespace brica2 {
         self->owner = false;
       }
 
-      VectorBase(const VectorBase& other)
-        : self(other.self) {
+      VectorBase(py::object ndarray)
+      {
+        py::object buffer = ndarray.attr("tobytes")();
+        py::str string = py::extract<py::str>(buffer);
+        std::size_t bytes =  py::len(string);
+        py::tuple shape = py::extract<py::tuple>(ndarray.attr("shape"));
+        char* b = py::extract<char*>(buffer);
+        shape_t s;
+        for(std::size_t i = 0; i < py::len(shape); ++i) {
+          s.push_back(py::extract<std::size_t>(shape[i]));
+        }
+        py::object name = ndarray.attr("dtype").attr("name");
+        py::str dtype = py::extract<py::str>(name);
+        std::string d = std::string(py::extract<char*>(dtype));
+        self = std::make_shared<impl>(d);
+        self->ndarray = ndarray;
+        self->shape = s;
+        self->bytes = bytes;
+        self->offset = 0;
+        delete[] self->buffer;
+        self->buffer = const_cast<char*>(b);
+        self->owner = false;
       }
+
+      VectorBase(const VectorBase& other)
+        : self(other.self) {}
 
       VectorBase(VectorBase&& other) noexcept
         : self(other.self) { other.self = nullptr; }
@@ -122,10 +167,13 @@ namespace brica2 {
       std::size_t& offset() const
       { return self->offset; }
 
+      std::string dtype() const
+      { return self->dtype; }
+
       void detatch()
       {
         std::shared_ptr<impl> other = self;
-        self = std::make_shared<impl>();
+        self = std::make_shared<impl>(other->dtype);
         self->shape = other->shape;
         self->bytes = other->bytes;
         self->offset = other->offset;
@@ -147,6 +195,16 @@ namespace brica2 {
         return Vector<T>(*this);
       }
 
+      py::object toPython()
+      {
+        py::object buffer = utils::buffer2py(self->buffer, self->bytes);
+        py::tuple shape = utils::shape2py(self->shape);
+        py::object numpy = py::import("numpy");
+        py::object frombuffer = numpy.attr("frombuffer");
+        py::object type = numpy.attr("int32");
+        return frombuffer(buffer, type).attr("reshape")(shape);
+      }
+
       friend bool operator ==(VectorBase& a, VectorBase& b) {
         if(a.self->shape != b.self->shape) return false;
         if(a.self->offset != b.self->offset) return false;
@@ -161,13 +219,15 @@ namespace brica2 {
 
     private:
       struct impl {
-        impl() : buffer(new char[1]), shape({}), bytes(1), offset(0), owner(true) {}
+        impl(std::string dtype) : buffer(new char[1]), shape({}), bytes(1), offset(0), owner(true), dtype(dtype) {}
         ~impl() { if(owner) delete[] buffer; }
         char* buffer;
         shape_t shape;
         std::size_t bytes;
         std::size_t offset;
         bool owner;
+        std::string dtype;
+        py::object ndarray;
       }; std::shared_ptr<impl> self;
     };
   }

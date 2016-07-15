@@ -37,6 +37,7 @@ namespace brica2 {
         std::size_t size0(3);
         std::size_t rank0(1);
         std::size_t length0(3);
+        std::string dtype0(getdtype<int>());
 
         Vector<int> v0(shape0);
 
@@ -44,6 +45,7 @@ namespace brica2 {
         ASSERT_EQ(size0,   v0.size());
         ASSERT_EQ(rank0,   v0.rank());
         ASSERT_EQ(length0, v0.length());
+        ASSERT_EQ(dtype0,  v0.dtype());
         ASSERT_EQ(0, static_cast<int>(v0[0]));
         ASSERT_EQ(0, static_cast<int>(v0[1]));
         ASSERT_EQ(0, static_cast<int>(v0[2]));

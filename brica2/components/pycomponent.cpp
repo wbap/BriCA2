@@ -90,7 +90,7 @@ namespace brica2 {
       for(auto iter = inputs.begin(); iter != inputs.end(); ++iter) {
         std::string key = iter->first;
         VectorBase& vector = iter->second;
-        input_dict[key] = vector2py(vector);
+        input_dict[key] = vector.toPython();
       }
 
       py::dict output_dict = py::extract<py::dict>(self->fire(input_dict));
@@ -99,7 +99,7 @@ namespace brica2 {
       for(std::size_t i = 0; i < py::len(output_keys); ++i) {
         py::object str = output_keys[i];
         std::string key = std::string(py::extract<char*>(str));
-        VectorBase vector = py2vector(output_dict[key]);
+        VectorBase vector(output_dict[key]);
         outputs.emplace(std::pair<std::string, VectorBase>(key, vector));
       }
 

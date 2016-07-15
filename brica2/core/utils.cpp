@@ -38,6 +38,19 @@ namespace brica2 {
       std::size_t accumulate(std::list<std::size_t> shape) {
         return std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<std::size_t>());
       }
+
+      py::object buffer2py(const char* buffer, std::size_t bytes) {
+        PyObject* pBuffer = PyByteArray_FromStringAndSize(buffer, bytes);
+        return py::object(py::handle<>(pBuffer));
+      }
+
+      py::tuple shape2py(shape_t shape) {
+        py::list slist;
+        for(auto iter = shape.begin(); iter != shape.end(); ++iter) {
+          slist.append(py::object(*iter));
+        }
+        return py::tuple(slist);
+      }
     }
   }
 }
