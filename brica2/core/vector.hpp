@@ -50,7 +50,7 @@ namespace brica2 {
         , _shape(shape)
         , _size(utils::accumulate(_shape))
         , _rank(_shape.size())
-        , _length(_rank ? _shape.front() : 0)
+        , _length(_rank ? _shape.back() : 0)
         , _offset(0)
       {
         reallocate(_size * type_size);
@@ -64,7 +64,7 @@ namespace brica2 {
         , _shape(shape)
         , _size(utils::accumulate(_shape))
         , _rank(_shape.size())
-        , _length(_rank ? _shape.front() : 0)
+        , _length(_rank ? _shape.back() : 0)
         , _offset(offset)
       {
         reallocate(_size * type_size);
@@ -75,7 +75,7 @@ namespace brica2 {
         , _shape(base.shape())
         , _size(utils::accumulate(_shape))
         , _rank(_shape.size())
-        , _length(_rank ? _shape.front() : 0)
+        , _length(_rank ? _shape.back() : 0)
         , _offset(base.offset())
       {
         if(_size * type_size != self->bytes) {
@@ -88,7 +88,7 @@ namespace brica2 {
         , _shape(shape)
         , _size(utils::accumulate(_shape))
         , _rank(shape.size())
-        , _length(_rank ? shape.front() : 0)
+        , _length(_rank ? shape.back() : 0)
         , _offset(0)
       {}
 
@@ -113,10 +113,10 @@ namespace brica2 {
       Vector(const Vector& other, std::size_t i)
         : Vector(other)
       {
-        _shape.pop_front();
+        _shape.pop_back();
         _size = utils::accumulate(_shape);
         _rank = _shape.size();
-        _length = _rank ? _shape.front() : 0;
+        _length = _rank ? _shape.back() : 0;
         _offset += i * _size;
       }
 
@@ -171,7 +171,7 @@ namespace brica2 {
         reinterpret_cast<T*>(self->buffer)[_offset] = value;
       }
 
-      operator T&()
+      operator T&() const
       {
         return reinterpret_cast<T*>(self->buffer)[_offset];
       }
@@ -184,7 +184,7 @@ namespace brica2 {
         }
         _shape = new_shape;
         _rank = _shape.size();
-        _length = _rank ? _shape.front() : 0;
+        _length = _rank ? _shape.back() : 0;
         return *this;
       }
 

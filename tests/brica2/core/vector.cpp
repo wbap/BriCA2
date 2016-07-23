@@ -81,7 +81,7 @@ namespace brica2 {
     }
 
     TEST(Vector, AssignSub) {
-      Vector<int> v0({2, 3});
+      Vector<int> v0({3, 2});
 
       ASSERT_EQ(0, static_cast<int>(v0[0][0]));
       ASSERT_EQ(0, static_cast<int>(v0[0][1]));

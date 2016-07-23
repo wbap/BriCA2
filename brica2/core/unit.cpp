@@ -92,7 +92,7 @@ namespace brica2 {
     }
 
     void Unit::make_in_port(std::string key, const VectorBase& init) {
-      self->in_ports.emplace(std::pair<std::string, Port>(key, Port(init)));
+      self->in_ports.emplace(std::pair<std::string, Port>(key, Port(init.clone())));
     }
 
     Port Unit::get_in_port(std::string key) const {
@@ -113,7 +113,7 @@ namespace brica2 {
     }
 
     void Unit::make_out_port(std::string key, const VectorBase& init) {
-      self->out_ports.emplace(std::pair<std::string, Port>(key, Port(init)));
+      self->out_ports.emplace(std::pair<std::string, Port>(key, Port(init.clone())));
     }
 
     Port Unit::get_out_port(std::string key) const {

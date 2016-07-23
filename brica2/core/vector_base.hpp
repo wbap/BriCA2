@@ -201,7 +201,7 @@ namespace brica2 {
         py::tuple shape = utils::shape2py(self->shape);
         py::object numpy = py::import("numpy");
         py::object frombuffer = numpy.attr("frombuffer");
-        py::object type = numpy.attr("int32");
+        py::object type = numpy.attr(self->dtype.c_str());
         return frombuffer(buffer, type).attr("reshape")(shape);
       }
 
