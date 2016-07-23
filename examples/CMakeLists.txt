@@ -1,0 +1,5 @@
+if (build_examples)
+   if (stacked_autoencoder)
+      add_subdirectory(stacked_autoencoder)
+   endif()
+endif()
