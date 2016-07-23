@@ -12,7 +12,7 @@ int main() {
   try {
     py::object main = py::import("__main__");
     py::object global(main.attr("__dict__"));
-    py::exec("import sys; sys.path.append('examples/stacked_autoencoder/python')", global, global);
+    py::exec("import sys; sys.path.append('examples/python/chainer')", global, global);
 
     py::object components = py::import("components");
     py::object mnist_object = components.attr("MNISTComponent")(100);
