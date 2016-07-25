@@ -38,6 +38,8 @@
 #include <memory>
 #include <cstring>
 
+#include <iostream>
+
 namespace brica2 {
   namespace core {
     namespace py = boost::python;
@@ -45,22 +47,22 @@ namespace brica2 {
     template<typename T>
     class Vector;
 
-    template<typename T> static constexpr std::string getdtype();
+    template<typename T> inline std::string getdtype();
 
-    template<> std::string getdtype<char     >() { return "int" + std::to_string(sizeof(char     ) * CHAR_BIT); }
-    template<> std::string getdtype<short    >() { return "int" + std::to_string(sizeof(short    ) * CHAR_BIT); }
-    template<> std::string getdtype<int      >() { return "int" + std::to_string(sizeof(int      ) * CHAR_BIT); }
-    template<> std::string getdtype<long     >() { return "int" + std::to_string(sizeof(long     ) * CHAR_BIT); }
-    template<> std::string getdtype<long long>() { return "int" + std::to_string(sizeof(long long) * CHAR_BIT); }
+    template<> inline std::string getdtype<char     >() { return "int" + std::to_string(sizeof(char     ) * CHAR_BIT); }
+    template<> inline std::string getdtype<short    >() { return "int" + std::to_string(sizeof(short    ) * CHAR_BIT); }
+    template<> inline std::string getdtype<int      >() { return "int" + std::to_string(sizeof(int      ) * CHAR_BIT); }
+    template<> inline std::string getdtype<long     >() { return "int" + std::to_string(sizeof(long     ) * CHAR_BIT); }
+    template<> inline std::string getdtype<long long>() { return "int" + std::to_string(sizeof(long long) * CHAR_BIT); }
 
-    template<> std::string getdtype<unsigned char     >() { return "uint" + std::to_string(sizeof(unsigned char     ) * CHAR_BIT); }
-    template<> std::string getdtype<unsigned short    >() { return "uint" + std::to_string(sizeof(unsigned short    ) * CHAR_BIT); }
-    template<> std::string getdtype<unsigned int      >() { return "uint" + std::to_string(sizeof(unsigned int      ) * CHAR_BIT); }
-    template<> std::string getdtype<unsigned long     >() { return "uint" + std::to_string(sizeof(unsigned long     ) * CHAR_BIT); }
-    template<> std::string getdtype<unsigned long long>() { return "uint" + std::to_string(sizeof(unsigned long long) * CHAR_BIT); }
+    template<> inline std::string getdtype<unsigned char     >() { return "uint" + std::to_string(sizeof(unsigned char     ) * CHAR_BIT); }
+    template<> inline std::string getdtype<unsigned short    >() { return "uint" + std::to_string(sizeof(unsigned short    ) * CHAR_BIT); }
+    template<> inline std::string getdtype<unsigned int      >() { return "uint" + std::to_string(sizeof(unsigned int      ) * CHAR_BIT); }
+    template<> inline std::string getdtype<unsigned long     >() { return "uint" + std::to_string(sizeof(unsigned long     ) * CHAR_BIT); }
+    template<> inline std::string getdtype<unsigned long long>() { return "uint" + std::to_string(sizeof(unsigned long long) * CHAR_BIT); }
 
-    template<> std::string getdtype<float>() { return "float" + std::to_string(sizeof(float) * CHAR_BIT); }
-    template<> std::string getdtype<double>() { return "float" + std::to_string(sizeof(double) * CHAR_BIT); }
+    template<> inline std::string getdtype<float>() { return "float" + std::to_string(sizeof(float) * CHAR_BIT); }
+    template<> inline std::string getdtype<double>() { return "float" + std::to_string(sizeof(double) * CHAR_BIT); }
 
     class VectorBase {
       template<typename U>
@@ -99,7 +101,8 @@ namespace brica2 {
         py::str string = py::extract<py::str>(buffer);
         std::size_t bytes =  py::len(string);
         py::tuple shape = py::extract<py::tuple>(ndarray.attr("shape"));
-        char* b = py::extract<char*>(buffer);
+        char* b = new char[bytes];
+        memcpy(b, py::extract<char*>(buffer), bytes);
         shape_t s;
         for(std::size_t i = 0; i < py::len(shape); ++i) {
           s.push_back(py::extract<std::size_t>(shape[i]));
@@ -113,8 +116,7 @@ namespace brica2 {
         self->bytes = bytes;
         self->offset = 0;
         delete[] self->buffer;
-        self->buffer = const_cast<char*>(b);
-        self->owner = false;
+        self->buffer = b;
       }
 
       VectorBase(const VectorBase& other)

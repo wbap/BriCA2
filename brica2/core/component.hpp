@@ -121,7 +121,7 @@ namespace brica2 {
         self->last_output_time = time;
         for(auto iter = self->outputs.begin(); iter != self->outputs.end(); ++iter) {
           std::string key = iter->first;
-          VectorBase& vector = iter->second;
+          VectorBase& vector = iter->second; 
           Port port = get_out_port(key);
           port.set_buffer(vector);
         }

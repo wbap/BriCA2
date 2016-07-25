@@ -28,6 +28,8 @@
 
 #include "brica2/components/pycomponent.hpp"
 
+#include <iostream>
+
 namespace brica2 {
   namespace components {
     using namespace core;
@@ -66,11 +68,6 @@ namespace brica2 {
       }
       return VectorBase(b, s, bytes);
     }
-
-    struct PyVectorWrapper {
-      py::object pyvector;
-      VectorBase vector;
-    };
 
     struct PyComponent::impl {
       py::object component;

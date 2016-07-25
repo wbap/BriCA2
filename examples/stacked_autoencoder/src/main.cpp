@@ -72,10 +72,13 @@ int main() {
       for(std::size_t i = 0; i < 60000 / 100; ++i) {
         s.step();
         loss0 = autoencoder.get_out_port("loss").get_buffer();
+        //std::cout << "Loss0:    " << (void*)autoencoder.get_out_port("loss").get_buffer().buffer() << std::endl;
         loss0_value += loss0;
         loss1 = perceptron.get_out_port("loss").get_buffer();
+        //std::cout << "Loss1   : " << (void*)perceptron.get_out_port("loss").get_buffer().buffer() << std::endl;
         loss1_value += loss1;
         accuracy = perceptron.get_out_port("accuracy").get_buffer();
+        //std::cout << "Accuracy: " << (void*)perceptron.get_out_port("accuracy").get_buffer().buffer() << std::endl;
         accuracy_value += accuracy;
       }
 
