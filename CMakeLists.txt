@@ -22,4 +22,4 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 
 add_subdirectory(brica2)
 add_subdirectory(tests)
-
+add_subdirectory(examples)

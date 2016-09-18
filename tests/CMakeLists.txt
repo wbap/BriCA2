@@ -16,6 +16,8 @@ if (test)
     brica2/core/module.cpp
     brica2/core/agent.cpp
 
+    brica2/core/thread_pool.cpp
+
     brica2/components/const.cpp
     brica2/components/pipe.cpp
     brica2/components/null.cpp
@@ -40,7 +42,9 @@ if (benchmark)
 
   add_executable(vector_bm brica2/core/vector_bm.cpp)
   add_executable(main_bm benchmark.cpp)
+  add_executable(thread_bm thread.cpp)
 
   target_link_libraries(vector_bm benchmark brica2-core brica2-schedulers brica2-components)
   target_link_libraries(main_bm benchmark brica2-core brica2-schedulers brica2-components)
+  target_link_libraries(thread_bm benchmark brica2-core brica2-schedulers brica2-components)
 endif()

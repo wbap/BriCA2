@@ -35,79 +35,40 @@
 namespace brica2 {
   namespace schedulers {
     VirtualTimeSyncScheduler::VirtualTimeSyncScheduler(core::Agent agent, double interval, std::size_t threads)
-      : Scheduler(agent), interval(interval), threads(threads) {}
+      : Scheduler(agent), interval(interval), threads(threads), pool(threads) {}
 
     double VirtualTimeSyncScheduler::step() {
       const std::size_t n_components = components.size();
 
-      std::vector<std::queue<std::function<void(void)> > > input_queue(threads);
-      std::vector<std::queue<std::function<void(void)> > > output_queue(threads);
-
-      std::queue<std::thread> thread_queue;
-
       for(std::size_t i = 0; i < n_components; ++i) {
         std::shared_ptr<core::Component> component = components[i];
         if(threads) {
-          std::function<void(void)> input = [this, component]() mutable {
+          pool.enqueue([&](){
             (*component).input(time);
             (*component)();
-          };
-          input_queue[i%threads].push(input);
+          });
         } else {
           (*component).input(time);
           (*component)();
         }
       }
 
-      if(threads) {
-        for(std::size_t i = 0; i < threads; ++i) {
-          std::queue<std::function<void(void)> > queue = input_queue[i];
-          std::function<void(void)> input = [queue]() mutable {
-            while(!queue.empty()) {
-              queue.front()();
-              queue.pop();
-            }
-          };
-          thread_queue.push(std::thread(input));
-        }
-
-        while(!thread_queue.empty()) {
-          thread_queue.front().join();
-          thread_queue.pop();
-        }
-      }
+      pool.exhaust();
 
       time += interval;
 
       for(std::size_t i = 0; i < n_components; ++i) {
         std::shared_ptr<core::Component> component = components[i];
         if(threads) {
-          std::function<void(void)> output = [this, component]() mutable {
+          pool.enqueue([&](){
             (*component).output(time);
-          };
-          output_queue[i%threads].push(output);
+          });
         } else {
           (*component).output(time);
         }
       }
 
-      if(threads) {
-        for(std::size_t i = 0; i < threads; ++i) {
-          std::queue<std::function<void(void)> > queue = output_queue[i];
-          std::function<void(void)> output = [queue]() mutable {
-            while(!queue.empty()) {
-              queue.front()();
-              queue.pop();
-            }
-          };
-          thread_queue.push(std::thread(output));
-        }
-
-        while(!thread_queue.empty()) {
-          thread_queue.front().join();
-          thread_queue.pop();
-        }
-      }
+      pool.exhaust();
 
       return time;
     }
