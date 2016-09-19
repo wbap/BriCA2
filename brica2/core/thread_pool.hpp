@@ -29,13 +29,12 @@
 #ifndef __BRICA2_CORE_THREAD_POOL__
 #define __BRICA2_CORE_THREAD_POOL__
 
-#include <condition_variable>
 #include <functional>
 #include <memory>
-#include <mutex>
-#include <queue>
-#include <vector>
 #include <thread>
+#include <vector>
+
+#include <boost/asio.hpp>
 
 namespace brica2 {
   namespace core {
@@ -43,17 +42,13 @@ namespace brica2 {
       using F = std::function<void()>;
     public:
       ThreadPool(std::size_t size);
-      void enqueue(F&& f);
+      void enqueue(F f);
       void exhaust();
       ~ThreadPool();
     private:
-      std::vector<std::thread> workers;
-      std::queue<F> tasks;
-      std::vector<bool> state;
-      bool idol;
-      std::mutex mutex;
-      std::condition_variable condition;
-      bool stop;
+      boost::asio::io_service io_service;
+      std::shared_ptr<boost::asio::io_service::work> work;
+      std::vector<std::thread> threads;
     };
   }
 }

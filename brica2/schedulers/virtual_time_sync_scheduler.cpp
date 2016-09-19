@@ -42,7 +42,7 @@ namespace brica2 {
 
       for(std::size_t i = 0; i < n_components; ++i) {
         std::shared_ptr<core::Component> component = components[i];
-        if(threads) {
+        if(threads != 1) {
           pool.enqueue([&](){
             (*component).input(time);
             (*component)();
@@ -59,7 +59,7 @@ namespace brica2 {
 
       for(std::size_t i = 0; i < n_components; ++i) {
         std::shared_ptr<core::Component> component = components[i];
-        if(threads) {
+        if(threads != 1) {
           pool.enqueue([&](){
             (*component).output(time);
           });

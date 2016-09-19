@@ -37,6 +37,8 @@
 #include <unordered_map>
 #include <cassert>
 
+#include <iostream>
+
 namespace brica2 {
   namespace core {
     using Dictionary = std::unordered_map<std::string, VectorBase>;
@@ -105,6 +107,7 @@ namespace brica2 {
       }
 
       virtual void input(double time) {
+        std::cout << "input" << std::endl;
         assert(self->last_input_time <= time);
         self->last_input_time = time;
         for(auto iter = self->inputs.begin(); iter != self->inputs.end(); ++iter) {
@@ -117,6 +120,7 @@ namespace brica2 {
       }
 
       virtual void output(double time) {
+        std::cout << "output" << std::endl;
         assert(self->last_output_time <= time);
         self->last_output_time = time;
         for(auto iter = self->outputs.begin(); iter != self->outputs.end(); ++iter) {
@@ -128,6 +132,7 @@ namespace brica2 {
       }
 
       void operator ()() {
+        std::cout << "fire" << std::endl;
         self->outputs = fire(self->inputs);
       }
 

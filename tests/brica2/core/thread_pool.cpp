@@ -39,9 +39,8 @@ namespace brica2 {
         ThreadPool pool(0);
 
         for(std::size_t i = 0; i < 8; ++i) {
-          std::cout << "Task " << i << std::endl;
           pool.enqueue([i](){
-            std::this_thread::sleep_for(std::chrono::seconds(8 - i));
+            std::this_thread::sleep_for(std::chrono::seconds(i));
             std::cout << "Task " << i << std::endl;
           });
         }

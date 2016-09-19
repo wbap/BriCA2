@@ -31,74 +31,32 @@
 
 namespace brica2 {
   namespace core {
-    ThreadPool::ThreadPool(std::size_t size) : idol(false), stop(false) {
+    ThreadPool::ThreadPool(std::size_t size) {
       if(size < 1) {
         size = std::thread::hardware_concurrency();
       }
 
+      work.reset(new boost::asio::io_service::work(io_service));
+
       for(std::size_t i = 0; i < size; ++i) {
-        F worker = [this, i, size](){
-          for(;;) {
-            F task;
-            {
-              std::unique_lock<std::mutex> lock(mutex);
-              condition.wait(lock, [this](){return stop || !tasks.empty();});
-              if(stop && tasks.empty()) {
-                return;
-              }
-              std::cout << tasks.size() << std::endl;
-              task = std::move(tasks.front());
-              tasks.pop();
-              std::cout << tasks.size() << std::endl;
-            }
-            {
-              std::unique_lock<std::mutex> lock(mutex);
-              condition.wait(lock);
-              state[i] = true;
-            }
-            task();
-            {
-              std::unique_lock<std::mutex> lock(mutex);
-              condition.wait(lock);
-              state[i] = false;
-              idol = false;
-              for(std::size_t j = 0; j < size; ++j) {
-                idol |= state[j];
-              }
-            }
-          }
-        };
-        workers.emplace_back(worker);
+        threads.emplace_back([this](){
+          io_service.run();
+        });
       }
     }
 
-    void ThreadPool::enqueue(F&& f) {
-      {
-        std::unique_lock<std::mutex> lock(mutex);
-        if(stop) {
-            throw std::runtime_error("enqueue on stopped ThreadPool");
-        }
-        tasks.emplace(std::function<void()>(f));
-      }
-      condition.notify_one();
+    void ThreadPool::enqueue(F f) {
+      io_service.post(f);
     }
 
     void ThreadPool::exhaust() {
-      for(;;) {
-        if(!idol) {
-          break;
-        }
-      }
+      
     }
 
     ThreadPool::~ThreadPool() {
-      {
-        std::unique_lock<std::mutex> lock(mutex);
-        stop = true;
-      }
-      condition.notify_all();
-      for(std::thread& worker: workers) {
-        worker.join();
+      work.reset();
+      for(std::thread& thread: threads) {
+        thread.join();
       }
     }
   }
