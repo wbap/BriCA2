@@ -1,11 +1,6 @@
 /******************************************************************************
  *
- * ./brica2/core/thread_pool.hpp
- *
- * @author Copyright (C) 2016 Kotone Itaya
- * @version 1.0.0
- * @created  2016/09/18 Kotone Itaya -- Created!
- * @@
+ * brica2/core/thread_pool.hpp
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -31,6 +26,7 @@
 
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -43,12 +39,15 @@ namespace brica2 {
     public:
       ThreadPool(std::size_t size);
       void enqueue(F f);
-      void exhaust();
+      bool running();
+      void wait();
       ~ThreadPool();
     private:
       boost::asio::io_service io_service;
       std::shared_ptr<boost::asio::io_service::work> work;
       std::vector<std::thread> threads;
+      std::mutex mtx;
+      std::size_t count;
     };
   }
 }

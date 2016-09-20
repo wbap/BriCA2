@@ -32,6 +32,8 @@
 #include "brica2/core/scheduler.hpp"
 #include "brica2/core/thread_pool.hpp"
 
+#include <mutex>
+
 namespace brica2 {
   namespace schedulers {
     class VirtualTimeSyncScheduler : public core::Scheduler {

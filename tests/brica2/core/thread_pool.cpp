@@ -44,8 +44,6 @@ namespace brica2 {
             std::cout << "Task " << i << std::endl;
           });
         }
-
-        pool.exhaust();
       }
     }
   }

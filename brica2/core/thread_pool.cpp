@@ -1,11 +1,6 @@
 /******************************************************************************
  *
- * ./brica2/core/thread_pool.cpp
- *
- * @author Copyright (C) 2016 Kotone Itaya
- * @version 1.0.0
- * @created  2016/09/18 Kotone Itaya -- Created!
- * @@
+ * brica2/core/thread_pool.cpp
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,12 +21,11 @@
  *
  *****************************************************************************/
 
-#include "./brica2/core/thread_pool.hpp"
-#include <iostream>
+#include "brica2/core/thread_pool.hpp"
 
 namespace brica2 {
   namespace core {
-    ThreadPool::ThreadPool(std::size_t size) {
+    ThreadPool::ThreadPool(std::size_t size) : count(0) {
       if(size < 1) {
         size = std::thread::hardware_concurrency();
       }
@@ -46,11 +40,25 @@ namespace brica2 {
     }
 
     void ThreadPool::enqueue(F f) {
-      io_service.post(f);
+      {
+        std::lock_guard<std::mutex> lock(mtx);
+        count++;
+      }
+      io_service.post([this, f](){
+          f();
+          {
+            std::lock_guard<std::mutex> lock(mtx);
+            count--;
+          }
+      });
     }
 
-    void ThreadPool::exhaust() {
-      
+    bool ThreadPool::running() {
+      return count != 0;
+    }
+
+    void ThreadPool::wait() {
+      while(running());
     }
 
     ThreadPool::~ThreadPool() {

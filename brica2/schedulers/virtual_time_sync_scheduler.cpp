@@ -29,8 +29,6 @@
 #include "brica2/schedulers/virtual_time_sync_scheduler.hpp"
 
 #include <functional>
-#include <thread>
-#include <queue>
 
 namespace brica2 {
   namespace schedulers {
@@ -43,32 +41,32 @@ namespace brica2 {
       for(std::size_t i = 0; i < n_components; ++i) {
         std::shared_ptr<core::Component> component = components[i];
         if(threads != 1) {
-          pool.enqueue([&](){
-            (*component).input(time);
-            (*component)();
+          pool.enqueue([this, component](){
+            component->input(time);
+            component->operator()();
           });
         } else {
-          (*component).input(time);
-          (*component)();
+          component->input(time);
+          component->operator()();
         }
       }
 
-      pool.exhaust();
+      pool.wait();
 
       time += interval;
 
       for(std::size_t i = 0; i < n_components; ++i) {
         std::shared_ptr<core::Component> component = components[i];
         if(threads != 1) {
-          pool.enqueue([&](){
-            (*component).output(time);
+          pool.enqueue([this, component](){
+            component->output(time);
           });
         } else {
-          (*component).output(time);
+          component->output(time);
         }
       }
 
-      pool.exhaust();
+      pool.wait();
 
       return time;
     }
