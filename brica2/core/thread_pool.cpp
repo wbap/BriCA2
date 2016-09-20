@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * brica2/schedulers/virtual_time_sync_scheduler.hpp
+ * brica2/core/thread_pool.cpp
  *
  * @author Copyright (C) 2016 Kotone Itaya
  * @version 1.0.0
- * @created  2016/07/01 Kotone Itaya -- Created!
+ * @created  2016/09/18 Kotone Itaya -- Created!
  * @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,26 +26,51 @@
  *
  *****************************************************************************/
 
-#ifndef __BRICA2_SCHEDULERS_VIRTUAL_TIME_SYNC_SCHEDULER__
-#define __BRICA2_SCHEDULERS_VIRTUAL_TIME_SYNC_SCHEDULER__
-
-#include "brica2/core/scheduler.hpp"
 #include "brica2/core/thread_pool.hpp"
 
-#include <mutex>
-
 namespace brica2 {
-  namespace schedulers {
-    class VirtualTimeSyncScheduler : public core::Scheduler {
-    public:
-      VirtualTimeSyncScheduler(core::Agent agent, double interval=1.0, std::size_t threads=0);
-      virtual double step();
-    private:
-      double interval;
-      std::size_t threads;
-      core::ThreadPool pool;
-    };
+  namespace core {
+    ThreadPool::ThreadPool(std::size_t size) : count(0) {
+      if(size < 1) {
+        size = std::thread::hardware_concurrency();
+      }
+
+      work.reset(new boost::asio::io_service::work(io_service));
+
+      for(std::size_t i = 0; i < size; ++i) {
+        threads.emplace_back([this](){
+          io_service.run();
+        });
+      }
+    }
+
+    void ThreadPool::enqueue(F f) {
+      {
+        std::lock_guard<std::mutex> lock(mtx);
+        count++;
+      }
+      io_service.post([this, f](){
+          f();
+          {
+            std::lock_guard<std::mutex> lock(mtx);
+            count--;
+          }
+      });
+    }
+
+    bool ThreadPool::running() {
+      return count != 0;
+    }
+
+    void ThreadPool::wait() {
+      while(running());
+    }
+
+    ThreadPool::~ThreadPool() {
+      work.reset();
+      for(std::thread& thread: threads) {
+        thread.join();
+      }
+    }
   }
 }
-
-#endif

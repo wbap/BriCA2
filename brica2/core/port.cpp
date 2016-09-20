@@ -28,11 +28,14 @@
 
 #include "brica2/core/port.hpp"
 
+#include <mutex>
+
 namespace brica2 {
   namespace core {
     struct Port::impl {
       std::weak_ptr<impl> target;
       VectorBase buffer;
+      std::mutex mutex;
     };
     
     Port::Port() : self(std::make_shared<impl>()) {}
@@ -77,10 +80,12 @@ namespace brica2 {
     }
 
     VectorBase& Port::get_buffer() const {
+      std::lock_guard<std::mutex> lock(self->mutex);
       return self->buffer;
     }
 
     void Port::set_buffer(VectorBase& buffer) {
+      std::lock_guard<std::mutex> lock(self->mutex);
       self->buffer = buffer;
     }
 
@@ -89,6 +94,7 @@ namespace brica2 {
     }
 
     bool Port::sync() {
+      std::lock_guard<std::mutex> lock(self->mutex);
       if(std::shared_ptr<impl> target = self->target.lock()) {
         self->buffer = target->buffer;
         return true;

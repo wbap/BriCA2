@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * brica2/schedulers/virtual_time_sync_scheduler.hpp
+ * tests/./brica2/core/thread_pool.cpp
  *
  * @author Copyright (C) 2016 Kotone Itaya
  * @version 1.0.0
- * @created  2016/07/01 Kotone Itaya -- Created!
+ * @created  2016/09/18 Kotone Itaya -- Created!
  * @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,26 +26,25 @@
  *
  *****************************************************************************/
 
-#ifndef __BRICA2_SCHEDULERS_VIRTUAL_TIME_SYNC_SCHEDULER__
-#define __BRICA2_SCHEDULERS_VIRTUAL_TIME_SYNC_SCHEDULER__
+#include "gtest/gtest.h"
+#include "./brica2/core/thread_pool.hpp"
 
-#include "brica2/core/scheduler.hpp"
-#include "brica2/core/thread_pool.hpp"
-
-#include <mutex>
+#include <chrono>
+#include <iostream>
 
 namespace brica2 {
-  namespace schedulers {
-    class VirtualTimeSyncScheduler : public core::Scheduler {
-    public:
-      VirtualTimeSyncScheduler(core::Agent agent, double interval=1.0, std::size_t threads=0);
-      virtual double step();
-    private:
-      double interval;
-      std::size_t threads;
-      core::ThreadPool pool;
-    };
+  namespace core {
+    namespace test {
+      TEST(Thread, Simple) {
+        ThreadPool pool(0);
+
+        for(std::size_t i = 0; i < 8; ++i) {
+          pool.enqueue([i](){
+            std::this_thread::sleep_for(std::chrono::seconds(i));
+            std::cout << "Task " << i << std::endl;
+          });
+        }
+      }
+    }
   }
 }
-
-#endif

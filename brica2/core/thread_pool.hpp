@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * brica2/schedulers/virtual_time_sync_scheduler.hpp
+ * brica2/core/thread_pool.hpp
  *
  * @author Copyright (C) 2016 Kotone Itaya
  * @version 1.0.0
- * @created  2016/07/01 Kotone Itaya -- Created!
+ * @created  2016/09/18 Kotone Itaya -- Created!
  * @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,24 +26,33 @@
  *
  *****************************************************************************/
 
-#ifndef __BRICA2_SCHEDULERS_VIRTUAL_TIME_SYNC_SCHEDULER__
-#define __BRICA2_SCHEDULERS_VIRTUAL_TIME_SYNC_SCHEDULER__
+#ifndef __BRICA2_CORE_THREAD_POOL__
+#define __BRICA2_CORE_THREAD_POOL__
 
-#include "brica2/core/scheduler.hpp"
-#include "brica2/core/thread_pool.hpp"
-
+#include <functional>
+#include <memory>
 #include <mutex>
+#include <thread>
+#include <vector>
+
+#include <boost/asio.hpp>
 
 namespace brica2 {
-  namespace schedulers {
-    class VirtualTimeSyncScheduler : public core::Scheduler {
+  namespace core {
+    class ThreadPool {
+      using F = std::function<void()>;
     public:
-      VirtualTimeSyncScheduler(core::Agent agent, double interval=1.0, std::size_t threads=0);
-      virtual double step();
+      ThreadPool(std::size_t size);
+      void enqueue(F f);
+      bool running();
+      void wait();
+      ~ThreadPool();
     private:
-      double interval;
-      std::size_t threads;
-      core::ThreadPool pool;
+      boost::asio::io_service io_service;
+      std::shared_ptr<boost::asio::io_service::work> work;
+      std::vector<std::thread> threads;
+      std::mutex mtx;
+      std::size_t count;
     };
   }
 }

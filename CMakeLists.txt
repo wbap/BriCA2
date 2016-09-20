@@ -14,7 +14,7 @@ add_definitions("-std=c++11")
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
 
-find_package(Boost COMPONENTS python REQUIRED)
+find_package(Boost COMPONENTS thread python REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(PythonLibs 2.7 REQUIRED)
@@ -23,4 +23,3 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 add_subdirectory(brica2)
 add_subdirectory(tests)
 add_subdirectory(examples)
-

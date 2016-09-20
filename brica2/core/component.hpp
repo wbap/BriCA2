@@ -33,6 +33,7 @@
 #include "brica2/core/unit.hpp"
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <cassert>
