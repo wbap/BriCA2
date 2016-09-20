@@ -2,6 +2,11 @@
  *
  * brica2/core/thread_pool.cpp
  *
+ * @author Copyright (C) 2016 Kotone Itaya
+ * @version 1.0.0
+ * @created  2016/09/18 Kotone Itaya -- Created!
+ * @@
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
