@@ -1,11 +1,10 @@
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
+include_directories(${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
+
+enable_testing()
+
 if (test)
   file(COPY python DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-
-  add_subdirectory(../lib/gtest-1.7.0 "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0")
-
-  enable_testing()
-
-  include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
 
   add_executable(runUnitTests
     brica2/core/vector.cpp
@@ -32,14 +31,6 @@ if (test)
 endif()
 
 if (benchmark)
-  add_subdirectory(../lib/benchmark-master "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark-master")
-
-  include_directories(${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
-
-  ##############
-  # Benchmarks
-  ##############
-
   add_executable(vector_bm brica2/core/vector_bm.cpp)
   add_executable(main_bm benchmark.cpp)
   add_executable(thread_bm thread.cpp)
