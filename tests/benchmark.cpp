@@ -15,7 +15,7 @@
 namespace py = boost::python;
 
 static void ConstPipeNull(benchmark::State& state) {
-  std::size_t size = static_cast<std::size_t>(state.range_x());
+  std::size_t size = static_cast<std::size_t>(state.range());
 
   brica2::core::Vector<int> v0({size});
   brica2::core::Vector<int> v1({size});
@@ -47,7 +47,7 @@ static void ConstPipeNull(benchmark::State& state) {
 
 static void ConstPythonNull(benchmark::State& state) {
   try {
-    std::size_t size = static_cast<std::size_t>(state.range_x());
+    std::size_t size = static_cast<std::size_t>(state.range());
 
     brica2::core::Vector<int> v0({size});
     brica2::core::Vector<int> v1({size});
@@ -95,7 +95,7 @@ static void ConstPythonNull(benchmark::State& state) {
 
 static void PythonInput(benchmark::State& state) {
   try {
-    std::size_t size = static_cast<std::size_t>(state.range_x());
+    std::size_t size = static_cast<std::size_t>(state.range());
 
     brica2::core::Vector<int> v0({size});
     brica2::core::Vector<int> v1({size});
@@ -133,7 +133,7 @@ static void PythonInput(benchmark::State& state) {
 
 static void PythonFire(benchmark::State& state) {
   try {
-    std::size_t size = static_cast<std::size_t>(state.range_x());
+    std::size_t size = static_cast<std::size_t>(state.range());
 
     brica2::core::Vector<int> v0({size});
     brica2::core::Vector<int> v1({size});
@@ -171,7 +171,7 @@ static void PythonFire(benchmark::State& state) {
 
 static void PythonOutput(benchmark::State& state) {
   try {
-    std::size_t size = static_cast<std::size_t>(state.range_x());
+    std::size_t size = static_cast<std::size_t>(state.range());
 
     brica2::core::Vector<int> v0({size});
     brica2::core::Vector<int> v1({size});
@@ -209,7 +209,7 @@ static void PythonOutput(benchmark::State& state) {
 
 static void PythonInputOutput(benchmark::State& state) {
   try {
-    std::size_t size = static_cast<std::size_t>(state.range_x());
+    std::size_t size = static_cast<std::size_t>(state.range());
 
     brica2::core::Vector<int> v0({size});
     brica2::core::Vector<int> v1({size});
