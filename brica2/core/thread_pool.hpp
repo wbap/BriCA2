@@ -35,7 +35,7 @@
 #include <thread>
 #include <vector>
 
-#include <boost/asio.hpp>
+#include "asio.hpp"
 
 namespace brica2 {
   namespace core {
@@ -48,8 +48,8 @@ namespace brica2 {
       void wait();
       ~ThreadPool();
     private:
-      boost::asio::io_service io_service;
-      std::shared_ptr<boost::asio::io_service::work> work;
+      asio::io_service io_service;
+      std::shared_ptr<asio::io_service::work> work;
       std::vector<std::thread> threads;
       std::mutex mtx;
       std::size_t count;

@@ -35,7 +35,7 @@ namespace brica2 {
         size = std::thread::hardware_concurrency();
       }
 
-      work.reset(new boost::asio::io_service::work(io_service));
+      work.reset(new asio::io_service::work(io_service));
 
       for(std::size_t i = 0; i < size; ++i) {
         threads.emplace_back([this](){
