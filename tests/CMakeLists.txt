@@ -7,6 +7,7 @@ if (test)
   file(COPY python DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
   add_executable(runUnitTests
+    brica2/core/vector_base.cpp
     brica2/core/vector.cpp
     brica2/core/port.cpp
     brica2/core/unit.cpp
@@ -20,7 +21,6 @@ if (test)
     brica2/components/const.cpp
     brica2/components/pipe.cpp
     brica2/components/null.cpp
-    brica2/components/pycomponent.cpp
 
     brica2/schedulers/virtual_time_sync_scheduler.cpp
   )

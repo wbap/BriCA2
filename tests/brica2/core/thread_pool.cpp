@@ -40,7 +40,7 @@ namespace brica2 {
 
         for(std::size_t i = 0; i < 8; ++i) {
           pool.enqueue([i](){
-            std::this_thread::sleep_for(std::chrono::seconds(i));
+            std::this_thread::sleep_for(std::chrono::milliseconds(i * 100));
             std::cout << "Task " << i << std::endl;
           });
         }

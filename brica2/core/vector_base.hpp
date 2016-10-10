@@ -29,8 +29,6 @@
 #ifndef __BRICA2_CORE_VECTOR_BASE__
 #define __BRICA2_CORE_VECTOR_BASE__
 
-#include <boost/python.hpp>
-
 #include "brica2/core/types.hpp"
 #include "brica2/core/utils.hpp"
 
@@ -42,8 +40,6 @@
 
 namespace brica2 {
   namespace core {
-    namespace py = boost::python;
-
     template<typename T>
     class Vector;
 
@@ -93,30 +89,6 @@ namespace brica2 {
         delete[] self->buffer;
         self->buffer = const_cast<char*>(buffer);
         self->owner = false;
-      }
-
-      VectorBase(py::object ndarray)
-      {
-        py::object buffer = ndarray.attr("tobytes")();
-        py::str string = py::extract<py::str>(buffer);
-        std::size_t bytes =  py::len(string);
-        py::tuple shape = py::extract<py::tuple>(ndarray.attr("shape"));
-        char* b = new char[bytes];
-        memcpy(b, py::extract<char*>(buffer), bytes);
-        shape_t s;
-        for(std::size_t i = 0; i < py::len(shape); ++i) {
-          s.push_back(py::extract<std::size_t>(shape[i]));
-        }
-        py::object name = ndarray.attr("dtype").attr("name");
-        py::str dtype = py::extract<py::str>(name);
-        std::string d = std::string(py::extract<char*>(dtype));
-        self = std::make_shared<impl>(d);
-        self->ndarray = ndarray;
-        self->shape = s;
-        self->bytes = bytes;
-        self->offset = 0;
-        delete[] self->buffer;
-        self->buffer = b;
       }
 
       VectorBase(const VectorBase& other)
@@ -197,16 +169,6 @@ namespace brica2 {
         return Vector<T>(*this);
       }
 
-      py::object toPython()
-      {
-        py::object buffer = utils::buffer2py(self->buffer, self->bytes);
-        py::tuple shape = utils::shape2py(self->shape);
-        py::object numpy = py::import("numpy");
-        py::object frombuffer = numpy.attr("frombuffer");
-        py::object type = numpy.attr(self->dtype.c_str());
-        return frombuffer(buffer, type).attr("reshape")(shape);
-      }
-
       friend bool operator ==(VectorBase& a, VectorBase& b) {
         if(a.self->shape != b.self->shape) return false;
         if(a.self->offset != b.self->offset) return false;
@@ -229,7 +191,6 @@ namespace brica2 {
         std::size_t offset;
         bool owner;
         std::string dtype;
-        py::object ndarray;
       }; std::shared_ptr<impl> self;
     };
   }

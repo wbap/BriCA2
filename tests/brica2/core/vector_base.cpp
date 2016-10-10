@@ -28,11 +28,22 @@
 
 #include "gtest/gtest.h"
 #include "brica2/core/vector_base.hpp"
+#include "brica2/core/vector.hpp"
 
 namespace brica2 {
   namespace core {
     namespace test {
+      TEST(VectorBase, Size) {
+        shape_t shape0({3});
+        Vector<int> v0(shape0);
+        VectorBase vb0(v0);
+        std::cout << sizeof(vb0) << std::endl;
 
+        shape_t shape1({4});
+        Vector<int> v1(shape1);
+        VectorBase vb1(v1);
+        std::cout << sizeof(vb1) << std::endl;
+      }
     }
   }
 }

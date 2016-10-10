@@ -29,8 +29,6 @@
 #ifndef __BRICA2_CORE_UTILS__
 #define __BRICA2_CORE_UTILS__
 
-#include <boost/python.hpp>
-
 #include "brica2/core/types.hpp"
 
 #include <list>
@@ -39,13 +37,7 @@
 namespace brica2 {
   namespace core {
     namespace utils {
-      namespace py = boost::python;
-
       std::size_t accumulate(std::list<std::size_t> shape);
-
-      py::object buffer2py(const char* buffer, std::size_t bytes);
-
-      py::tuple shape2py(shape_t shape);
     }
   }
 }
