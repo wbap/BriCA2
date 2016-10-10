@@ -35,6 +35,7 @@
 #include <list>
 #include <memory>
 #include <cstring>
+#include <climits>
 
 #include <iostream>
 
