@@ -9,6 +9,7 @@ if (test)
   add_executable(runUnitTests
     brica2/core/vector_base.cpp
     brica2/core/vector.cpp
+    brica2/core/interprocess_vector.cpp
     brica2/core/port.cpp
     brica2/core/unit.cpp
 

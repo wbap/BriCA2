@@ -70,22 +70,22 @@ namespace brica2 {
         }
       }
 
-      virtual void make_in_port(std::string key, const VectorBase& init) final {
+      virtual void make_in_port(std::string key, const VectorBase& init) {
         Unit::make_in_port(key, init);
         self->inputs.emplace(std::pair<std::string, VectorBase>(key, init.clone()));
       }
 
-      virtual void remove_in_port(std::string key) final {
+      virtual void remove_in_port(std::string key) {
         Unit::remove_in_port(key);
         self->inputs.erase(key);
       }
 
-      virtual void make_out_port(std::string key, const VectorBase& init) final {
+      virtual void make_out_port(std::string key, const VectorBase& init) {
         Unit::make_out_port(key, init);
         self->outputs.emplace(std::pair<std::string, VectorBase>(key, init.clone()));
       }
 
-      virtual void remove_out_port(std::string key) final {
+      virtual void remove_out_port(std::string key) {
         Unit::remove_out_port(key);
       }
 

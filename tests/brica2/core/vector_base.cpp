@@ -37,12 +37,12 @@ namespace brica2 {
         shape_t shape0({3});
         Vector<int> v0(shape0);
         VectorBase vb0(v0);
-        std::cout << sizeof(vb0) << std::endl;
 
         shape_t shape1({4});
         Vector<int> v1(shape1);
         VectorBase vb1(v1);
-        std::cout << sizeof(vb1) << std::endl;
+
+        ASSERT_EQ(sizeof(v1), sizeof(v0));
       }
     }
   }

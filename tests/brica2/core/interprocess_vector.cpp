@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * brica2/core/utils.hpp
+ * tests/./brica2/core/interprocess_vector.cpp
  *
  * @author Copyright (C) 2016 Kotone Itaya
  * @version 1.0.0
- * @created  2016/06/29 Kotone Itaya -- Created!
+ * @created  2016/10/11 Kotone Itaya -- Created!
  * @@
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,21 +26,33 @@
  *
  *****************************************************************************/
 
-#ifndef __BRICA2_CORE_UTILS__
-#define __BRICA2_CORE_UTILS__
-
-#include "brica2/core/types.hpp"
-
-#include <memory>
+#include "gtest/gtest.h"
+#include "./brica2/core/vector.hpp"
+#include "./brica2/core/interprocess_vector.hpp"
 
 namespace brica2 {
   namespace core {
-    namespace utils {
-      std::size_t accumulate(shape_t shape);
+    namespace test {
+      TEST(InterprocessVector, Simple) {
+        shape_t shape0({3});
+        std::size_t size0(3);
+        std::size_t rank0(1);
+        std::size_t length0(3);
+        std::string dtype0(getdtype<int>());
 
-      std::string getAddressString(void* ptr);
+        Vector<int> v0(shape0);
+        InterprocessVector iv0(v0);
+        Vector<int> v1 = iv0.getCopy();
+
+        ASSERT_EQ(v1.shape(),  v0.shape());
+        ASSERT_EQ(v1.size(),   v0.size());
+        ASSERT_EQ(v1.rank(),   v0.rank());
+        ASSERT_EQ(v1.length(), v0.length());
+        ASSERT_EQ(v1.dtype(),  v0.dtype());
+        ASSERT_EQ(0, static_cast<int>(v0[0]));
+        ASSERT_EQ(0, static_cast<int>(v0[1]));
+        ASSERT_EQ(0, static_cast<int>(v0[2]));
+      }
     }
   }
 }
-
-#endif

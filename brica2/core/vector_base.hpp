@@ -65,12 +65,12 @@ namespace brica2 {
       template<typename U>
       friend class Vector;
     public:
-      VectorBase(std::string dtype=getdtype<int>())
+      VectorBase(std::string dtype=getdtype<int>(), bool owner=true)
         : self(std::make_shared<impl>(dtype))
       {
         self->shape = {};
         self->offset = 0;
-        self->owner = true;
+        self->owner = owner;
       }
 
       VectorBase(shape_t shape, std::size_t offset, std::string dtype=getdtype<int>())
@@ -81,7 +81,7 @@ namespace brica2 {
         self->owner = true;
       }
 
-      VectorBase(const char* buffer, shape_t shape, std::size_t bytes, std::string dtype=getdtype<int>())
+      VectorBase(const char* buffer, shape_t shape, std::size_t bytes, std::size_t offset=0, std::string dtype=getdtype<int>(), bool owner=false)
         : self(std::make_shared<impl>(dtype))
       {
         self->shape = shape;
@@ -89,7 +89,7 @@ namespace brica2 {
         self->offset = 0;
         delete[] self->buffer;
         self->buffer = const_cast<char*>(buffer);
-        self->owner = false;
+        self->owner = owner;
       }
 
       VectorBase(const VectorBase& other)
@@ -145,6 +145,11 @@ namespace brica2 {
       std::string dtype() const
       { return self->dtype; }
 
+    protected:
+      void point(char* ptr)
+      { self->buffer = static_cast<char*>(ptr); }
+
+    public:
       void detatch()
       {
         std::shared_ptr<impl> other = self;

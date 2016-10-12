@@ -31,12 +31,19 @@
 #include <algorithm>
 #include <functional>
 #include <numeric>
+#include <sstream>
 
 namespace brica2 {
   namespace core {
     namespace utils {
-      std::size_t accumulate(std::list<std::size_t> shape) {
+      std::size_t accumulate(shape_t shape) {
         return std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<std::size_t>());
+      }
+
+      std::string getAddressString(void* ptr) {
+        std::ostringstream oss;
+        oss << ptr;
+        return oss.str();
       }
     }
   }

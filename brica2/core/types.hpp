@@ -29,11 +29,11 @@
 #ifndef __BRICA2_CORE_TYPES__
 #define __BRICA2_CORE_TYPES__
 
-#include <list>
+#include <vector>
 
 namespace brica2 {
   namespace core {
-    using shape_t = std::list<std::size_t>;
+    using shape_t = std::vector<std::size_t>;
   }
 }
 
