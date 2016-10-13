@@ -52,25 +52,19 @@ namespace brica2 {
         bip::shared_memory_object::remove(self->name.c_str());
         self->shm = new bip::shared_memory_object(bip::create_only, self->name.c_str(), bip::read_write);
 
-        std::size_t size =
-          sizeof(std::size_t) +                       // Size of buffer (bytes)
-          sizeof(char) * base.bytes() +               // Region for buffer (buffer)
+        self->size =
           sizeof(std::size_t) +                       // Size of shape
           sizeof(std::size_t) * base.shape().size() + // Region for shape (shape)
           sizeof(std::size_t) +                       // Region for offset
           sizeof(std::size_t) +                       // Length of dtype
-          sizeof(char) * base.dtype().length();       // Region for dtype
+          sizeof(char) * base.dtype().length() +      // Region for dtype
+          sizeof(std::size_t) +                       // Size of buffer (bytes)
+          sizeof(char) * base.bytes();                // Region for buffer (buffer)
 
-        self->shm->truncate(size);
+        self->shm->truncate(self->size);
         self->region = new bip::mapped_region(*(self->shm), bip::read_write);
 
         char* ptr = static_cast<char*>(self->region->get_address());
-
-        *(reinterpret_cast<std::size_t*>(ptr)) = base.bytes();
-        ptr += sizeof(std::size_t);
-
-        memcpy(ptr, base.buffer(), base.bytes());
-        ptr += sizeof(char) * base.bytes();
 
         *(reinterpret_cast<std::size_t*>(ptr)) = base.shape().size();
         ptr += sizeof(std::size_t);
@@ -89,32 +83,35 @@ namespace brica2 {
         memcpy(ptr, base.dtype().c_str(), base.dtype().length());
         ptr += sizeof(char) * base.dtype().length();
 
+        *(reinterpret_cast<std::size_t*>(ptr)) = base.bytes();
+        ptr += sizeof(std::size_t);
+
+        memcpy(ptr, base.buffer(), base.bytes());
+        ptr += sizeof(char) * base.bytes();
+
         point(static_cast<char*>(self->region->get_address()));
       }
 
-      InterprocessVector(std::string name) {
-        self->name = name;
-        self->shm = new bip::shared_memory_object(bip::open_only, self->name.c_str(), bip::read_write);        
+      InterprocessVector(const InterprocessVector& other) : VectorBase(other.dtype(), false), self(std::make_shared<impl>()) {
+        self->name = other.name();
+        self->size = other.size();
+        self->shm = new bip::shared_memory_object(bip::open_only, self->name.c_str(), bip::read_write);
+        self->shm->truncate(self->size);
+        self->region = new bip::mapped_region(*(self->shm), bip::read_write);
+        point(static_cast<char*>(self->region->get_address()));
       }
 
-      VectorBase getCopy() {
-        std::size_t bytes;
-        char* buffer;
+      VectorBase get() {
         std::size_t size;
         shape_t shape;
         std::size_t offset;
         std::size_t length;
         char* tmp;
         std::string dtype;
+        std::size_t bytes;
+        char* buffer;
 
         char* ptr = this->buffer();
-
-        bytes = *(reinterpret_cast<std::size_t*>(ptr));
-        ptr += sizeof(std::size_t);
-
-        buffer = new char[bytes];
-        memcpy(buffer, ptr, bytes);
-        ptr += sizeof(char) * bytes;
 
         size = *(reinterpret_cast<std::size_t*>(ptr));
         ptr += sizeof(std::size_t);
@@ -133,8 +130,68 @@ namespace brica2 {
         tmp = new char[length];
         memcpy(tmp, ptr, length);
         dtype = std::string(tmp);
+        delete[] tmp;
+        ptr += sizeof(char) * length;
+
+        bytes = *(reinterpret_cast<std::size_t*>(ptr));
+        ptr += sizeof(std::size_t);
+
+        buffer = new char[bytes];
+        memcpy(buffer, ptr, bytes);
+        ptr += sizeof(char) * bytes;
 
         return VectorBase(buffer, shape, bytes, offset, dtype, true);
+      }
+
+      void set(const VectorBase& target) {
+        std::size_t size;
+        shape_t shape;
+        std::size_t offset;
+        std::size_t length;
+        char* tmp;
+        std::string dtype;
+        std::size_t bytes;
+        char* buffer;
+
+        char* ptr = this->buffer();
+
+        size = *(reinterpret_cast<std::size_t*>(ptr));
+        ptr += sizeof(std::size_t);
+
+        for(std::size_t i = 0; i < size; ++i) {
+          shape.push_back(*(reinterpret_cast<std::size_t*>(ptr)));
+          ptr += sizeof(std::size_t);
+        }
+
+        offset = *(reinterpret_cast<std::size_t*>(ptr));
+        ptr += sizeof(std::size_t);
+
+        length = *(reinterpret_cast<std::size_t*>(ptr));
+        ptr += sizeof(std::size_t);
+
+        tmp = new char[length];
+        memcpy(tmp, ptr, length);
+        dtype = std::string(tmp);
+        delete[] tmp;
+        ptr += sizeof(char) * length;
+
+        bytes = *(reinterpret_cast<std::size_t*>(ptr));
+        ptr += sizeof(std::size_t);
+
+        assert(shape == target.shape());
+        assert(offset == target.offset());
+        assert(dtype == target.dtype());
+        assert(bytes == target.bytes());
+
+        memcpy(ptr, target.buffer(), bytes);
+      }
+
+      const std::string& name() const {
+        return self->name;
+      }
+
+      const std::size_t& size() const {
+        return self->size;
       }
     private:
       struct impl {
@@ -144,6 +201,7 @@ namespace brica2 {
           if(shm != nullptr) delete shm;
         }
         std::string name;
+        std::size_t size;
         bip::shared_memory_object* shm;
         bip::mapped_region* region;
       }; std::shared_ptr<impl> self;
