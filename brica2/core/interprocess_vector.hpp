@@ -127,8 +127,9 @@ namespace brica2 {
         length = *(reinterpret_cast<std::size_t*>(ptr));
         ptr += sizeof(std::size_t);
 
-        tmp = new char[length];
+        tmp = new char[length+1];
         memcpy(tmp, ptr, length);
+        tmp[length] = '\0';
         dtype = std::string(tmp);
         delete[] tmp;
         ptr += sizeof(char) * length;
@@ -138,7 +139,6 @@ namespace brica2 {
 
         buffer = new char[bytes];
         memcpy(buffer, ptr, bytes);
-        ptr += sizeof(char) * bytes;
 
         return VectorBase(buffer, shape, bytes, offset, dtype, true);
       }
