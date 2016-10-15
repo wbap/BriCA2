@@ -32,7 +32,8 @@ namespace brica2 {
   namespace components {
     using namespace core;
 
-    Null::Null(std::string key, const VectorBase& init) {
+    Null::Null(std::string key, const VectorBase& init, double interval, double offset)
+      : Component(interval, offset){
       make_in_port(key, init.clone());
     }
 

@@ -32,8 +32,8 @@
 
 namespace brica2 {
   namespace components {
-    Wait::Wait(std::string from, std::string to, VectorBase& init, std::size_t usec)
-      : from(from), to(to), usec(usec) {
+    Wait::Wait(std::string from, std::string to, VectorBase& init, std::size_t usec, double interval, double offset)
+      : Component(interval, offset), from(from), to(to), usec(usec) {
       make_in_port(from, init.clone());
       make_out_port(to, init.clone());
     }

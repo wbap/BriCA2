@@ -32,7 +32,8 @@ namespace brica2 {
   namespace components {
     using namespace core;
 
-    Pipe::Pipe(std::string from, std::string to, const VectorBase& init) : from(from), to(to) {
+    Pipe::Pipe(std::string from, std::string to, const VectorBase& init, double interval, double offset)
+      : Component(interval, offset), from(from), to(to) {
       make_in_port(from, init.clone());
       make_out_port(to, init.clone());
     }

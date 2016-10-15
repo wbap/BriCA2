@@ -37,7 +37,7 @@ namespace brica2 {
 
     class Pipe : public Component {
     public:
-      Pipe(std::string from, std::string to, const VectorBase& init);
+      Pipe(std::string from, std::string to, const VectorBase& init, double interval=1.0, double offset=0.0);
       Dictionary fire(Dictionary& inputs);
     private:
       std::string from;

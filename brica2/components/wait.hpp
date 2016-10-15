@@ -37,7 +37,7 @@ namespace brica2 {
 
     class Wait : public Component {
     public:
-      Wait(std::string from, std::string to, VectorBase& init, std::size_t usec);
+      Wait(std::string from, std::string to, VectorBase& init, std::size_t usec, double interval=1.0, double offset=0.0);
       virtual ~Wait();
       Dictionary fire(Dictionary& inputs);
     private:

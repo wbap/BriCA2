@@ -126,9 +126,7 @@ namespace brica2 {
       }
 
       friend void swap(VectorBase& a, VectorBase& b)
-      {
-        std::swap(a.self, b.self);
-      }
+      { std::swap(a.self, b.self); }
 
       char* buffer() const
       { return self->buffer; }

@@ -32,8 +32,8 @@ namespace brica2 {
   namespace components {
     using namespace core;
 
-    Const::Const(std::string key, const VectorBase& init)
-      : key(key), value(init) {
+    Const::Const(std::string key, const VectorBase& init, double interval, double offset)
+      : Component(interval, offset), key(key), value(init) {
       VectorBase zeros(init.shape(), init.offset());
       zeros.reallocate(init.bytes());
       make_out_port(key, zeros);

@@ -37,7 +37,7 @@ namespace brica2 {
 
     class Null : public Component {
     public:
-      Null(std::string key, const VectorBase& init);
+      Null(std::string key, const VectorBase& init, double interval=1.0, double offset=0.0);
       Dictionary fire(Dictionary& inputs);
     };
   }

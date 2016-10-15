@@ -128,7 +128,7 @@ namespace brica2 {
         }
       }
 
-      void operator ()() {
+      virtual void operator ()() {
         self->outputs = fire(self->inputs);
       }
 
@@ -137,6 +137,14 @@ namespace brica2 {
       void reset() {
         self->last_input_time = 0.0;
         self->last_output_time = 0.0;
+      }
+
+      const double& interval() const {
+        return self->interval;
+      }
+
+      const double& offset() const {
+        return self->offset;
       }
 
       template<class C>
@@ -149,8 +157,8 @@ namespace brica2 {
         Dictionary outputs;
         double last_input_time = 0.0;
         double last_output_time = 0.0;
-        double offset = 0.0;
         double interval = 1.0;
+        double offset = 0.0;
       }; std::shared_ptr<impl> self;
     };
   }
