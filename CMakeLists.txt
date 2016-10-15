@@ -18,6 +18,11 @@ else()
   add_definitions("-std=c++0x")
 endif()
 
+# Find Boost
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+
 # Include directories for BriCA2
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
