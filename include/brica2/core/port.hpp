@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2/core/port.hpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,18 +23,35 @@
  *
  *****************************************************************************/
 
-#include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#ifndef __BRICA2_CORE_PORT__
+#define __BRICA2_CORE_PORT__
+
+#include "brica2/core/cargo.hpp"
+
+#include <memory>
 
 namespace brica2 {
 namespace core {
 
-TEST(Component, ConstPipeNull)
-{
-  
-}
+class Port {
+public:
+  Port();
+  Port(Cargo&);
+  Port(const Port&);
+  Port(Port&&) noexcept;
+  Port& operator=(const Port&);
+  Port& operator=(Port&&) noexcept;
+  friend void swap(Port&, Port&);
+  Cargo& get_buffer() const;
+  void set_buffer(const Cargo&);
+  void connect(const Port&);
+  void sync();
+private:
+  struct impl; std::shared_ptr<impl> self;
+};
 
 }
 }
 
+#endif
 

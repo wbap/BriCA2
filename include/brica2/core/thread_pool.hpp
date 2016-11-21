@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2/core/thread_pool.hpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,18 +23,29 @@
  *
  *****************************************************************************/
 
-#include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#ifndef __BRICA2_CORE_THREAD_POOL__
+#define __BRICA2_CORE_THREAD_POOL__
+
+#include <functional>
+#include <memory>
 
 namespace brica2 {
 namespace core {
 
-TEST(Component, ConstPipeNull)
-{
-  
-}
+class ThreadPool {
+public:
+  ThreadPool(std::size_t);
+  virtual ~ThreadPool();
+  void enqueue(std::function<void()>);
+  bool running() const;
+  void wait() const;
+  const std::size_t size() const;
+private:
+  struct impl; std::shared_ptr<impl> self;
+};
 
 }
 }
 
+#endif
 

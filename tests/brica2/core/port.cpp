@@ -1,11 +1,8 @@
 /******************************************************************************
  *
- * tests/brica2/core/port.cpp
+ * brica2/core/port.cpp
  *
- * @author Copyright (C) 2016 Kotone Itaya
- * @version 1.0.0
- * @created  2016/06/29 Kotone Itaya -- Created!
- * @@
+ * Copyright (C) 2016 Kotone Itaya
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,76 +23,112 @@
  *
  *****************************************************************************/
 
-#include "gtest/gtest.h"
 #include "brica2/core/port.hpp"
-#include "brica2/core/vector.hpp"
+#include "gtest/gtest.h"
 
 namespace brica2 {
-  namespace core {
-    namespace test {
-      TEST(Port, Simple) {
-        Port p0;
-      }
+namespace core {
 
-      TEST(Port, Access) {
-        Port p0;
-        Vector<int> v0({1});
-        Vector<int> v1({1});
-
-        v0[0] = 42;
-
-        p0.set_buffer(v0);
-        v1 = p0.get_buffer();
-
-        ASSERT_EQ(v0.shape(),  v1.shape());
-        ASSERT_EQ(v0.rank(),   v1.rank());
-        ASSERT_EQ(v0.size(),   v1.size());
-        ASSERT_EQ(v0.length(), v1.length());
-        ASSERT_EQ(static_cast<int>(v0[0]), static_cast<int>(v1[0]));
-      }
-
-      TEST(Port, Sync) {
-        Port p0;
-        Port p1;
-        Vector<int> v0({1});
-        Vector<int> v1({1});
-
-        p1.connect(p0);
-
-        v0[0] = 42;
-
-        p0.set_buffer(v0);
-        p1.sync();
-
-        v1 = p1.get_buffer();
-
-        ASSERT_EQ(v0.shape(),  v1.shape());
-        ASSERT_EQ(v0.rank(),   v1.rank());
-        ASSERT_EQ(v0.size(),   v1.size());
-        ASSERT_EQ(v0.length(), v1.length());
-        ASSERT_EQ(static_cast<int>(v0[0]), static_cast<int>(v1[0]));
-      }
-
-      TEST(Port, Alias) {
-        Port p0;
-        Port p1;
-        Vector<int> v0({1});
-        Vector<int> v1({1});
-
-        p0.set_buffer(v0);
-
-        p1 = p0;
-
-        v1 = p1.get_buffer();
-
-        v0[0] = 42;
-
-        ASSERT_EQ(v0.shape(),  v1.shape());
-        ASSERT_EQ(v0.rank(),   v1.rank());
-        ASSERT_EQ(v0.size(),   v1.size());
-        ASSERT_EQ(v0.length(), v1.length());
-        ASSERT_EQ(static_cast<int>(v0[0]), static_cast<int>(v1[0]));
-      }
-    }
-  }
+TEST(Port, Simple) {
+  Port p0;
 }
+
+TEST(Port, Accessor) {
+  Port p0;
+
+  Cargo c0;
+  Cargo c1;
+
+  int i0 = 42;
+
+  c0.set(i0);
+
+  p0.set_buffer(c0);
+  c1 = p0.get_buffer();
+
+  int& i1 = c0;
+  int& i2 = c1;
+
+  ASSERT_EQ(c0.get<int>(), i0);
+  ASSERT_EQ(c1.get<int>(), i0);
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+  ASSERT_EQ((void*)(&i1), (void*)(&i2));
+}
+
+TEST(Port, Sync) {
+  Port p0;
+  Port p1;
+
+  Cargo c0;
+  Cargo c1;
+
+  int i0 = 42;
+
+  p1.connect(p0);
+
+  c0.set(i0);
+
+  p0.set_buffer(c0);
+  p1.sync();
+  c1 = p1.get_buffer();
+
+  int& i1 = c0;
+  int& i2 = c1;
+
+  ASSERT_EQ(c0.get<int>(), i0);
+  ASSERT_EQ(c1.get<int>(), i0);
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+  ASSERT_EQ((void*)(&i1), (void*)(&i2));
+}
+
+TEST(Port, Alias) {
+  Port p0;
+  Port p1;
+
+  Cargo c0;
+  Cargo c1;
+
+  int i0 = 42;
+  int i1 = 43;
+
+  ASSERT_TRUE(c0.empty());
+  ASSERT_TRUE(c1.empty());
+
+  p0.set_buffer(c0);
+
+  p1 = p0;
+
+  c1 = p1.get_buffer();
+
+  c0.set(i0);
+
+  ASSERT_FALSE(c0.empty());
+  ASSERT_FALSE(c0.unique());
+  ASSERT_FALSE(c1.empty());
+  ASSERT_FALSE(c1.unique());
+  ASSERT_EQ(c0.use_count(), 3);
+  ASSERT_EQ(c1.use_count(), 3);
+
+  int& i2 = c0;
+  int& i3 = c1;
+
+  ASSERT_EQ(c0.get<int>(), i0);
+  ASSERT_EQ(c1.get<int>(), i0);
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+  ASSERT_EQ((void*)(&i2), (void*)(&i3));
+
+  c0.set(i1);
+
+  int& i4 = c0;
+  int& i5 = c1;
+
+  ASSERT_EQ(c0.get<int>(), i1);
+  ASSERT_EQ(c1.get<int>(), i1);
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+  ASSERT_EQ((void*)(&i4), (void*)(&i5));
+}
+
+}
+}
+
+

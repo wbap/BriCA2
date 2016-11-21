@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2/scheduler.hpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,18 +23,10 @@
  *
  *****************************************************************************/
 
-#include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#ifndef __BRICA2_SCHEDULER__
+#define __BRICA2_SCHEDULER__
 
-namespace brica2 {
-namespace core {
+#include "brica2/scheduler/virtual_time_sync_scheduler.hpp"
 
-TEST(Component, ConstPipeNull)
-{
-  
-}
-
-}
-}
-
+#endif
 

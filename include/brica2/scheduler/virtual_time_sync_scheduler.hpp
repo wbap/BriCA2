@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2/scheduler/virtual_time_sync_scheduler.hpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,18 +23,27 @@
  *
  *****************************************************************************/
 
+#ifndef __BRICA2_SCHEDULER_VIRTUAL_TIME_SYNC_SCHEDULER__
+#define __BRICA2_SCHEDULER_VIRTUAL_TIME_SYNC_SCHEDULER__
+
 #include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#include "brica2/core/module.hpp"
+#include "brica2/core/scheduler.hpp"
+#include "brica2/core/thread_pool.hpp"
 
 namespace brica2 {
-namespace core {
+namespace scheduler {
 
-TEST(Component, ConstPipeNull)
-{
-  
+class VirtualTimeSyncScheduler : public core::Scheduler {
+public:
+  VirtualTimeSyncScheduler(core::Module&, std::size_t);
+  double step();
+private:
+  core::ThreadPool pool;
+};
+
+}
 }
 
-}
-}
-
+#endif
 

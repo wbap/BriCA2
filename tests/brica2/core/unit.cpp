@@ -1,11 +1,8 @@
 /******************************************************************************
  *
- * tests/brica2/core/unit.cpp
+ * brica2/core/unit.cpp
  *
- * @author Copyright (C) 2016 Kotone Itaya
- * @version 1.0.0
- * @created  2016/06/29 Kotone Itaya -- Created!
- * @@
+ * Copyright (C) 2016 Kotone Itaya
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,85 +23,91 @@
  *
  *****************************************************************************/
 
-#include "gtest/gtest.h"
 #include "brica2/core/unit.hpp"
-#include "brica2/core/vector.hpp"
+#include "gtest/gtest.h"
 
 namespace brica2 {
-  namespace core {
-    namespace test {
-      TEST(Unit, Simple) {
-        Unit u0;
-      }
+namespace core {
 
-      TEST(Unit, Connect) {
-        Unit u0;
-        Unit u1;
-        Vector<int> v0({1});
-        Vector<int> v1({1});
-        Vector<int> v2({1});
-        Vector<int> v3({1});
-
-        v0[0] = 42;
-
-        u0.make_out_port("out", v0);
-        u1.make_in_port("in", v1);
-
-        v2 = u0.get_out_port("out").get_buffer();
-        v3 = u1.get_in_port("in").get_buffer();
-
-        ASSERT_NE(static_cast<int>(v2[0]), static_cast<int>(v3[0]));
-
-        connect(u0, "out", u1, "in");
-
-        u1.get_in_port("in").sync();
-
-        v2 = u0.get_out_port("out").get_buffer();
-        v3 = u1.get_in_port("in").get_buffer();
-
-        ASSERT_EQ(static_cast<int>(v2[0]), static_cast<int>(v3[0]));
-      }
-
-      TEST(Unit, Alias) {
-        Unit u0;
-        Unit u1;
-
-        Vector<int> v0({1});
-        Vector<int> v1({1});
-        Vector<int> v2({1});
-        Vector<int> v3({1});
-
-        v0[0] = 42;
-
-        u0.make_in_port("in", v0);
-        u1.make_in_port("in", v1);
-
-        v2 = u0.get_in_port("in").get_buffer();
-        v3 = u1.get_in_port("in").get_buffer();
-
-        ASSERT_NE(static_cast<int>(v2[0]), static_cast<int>(v3[0]));
-
-        u0.make_out_port("out", v0);
-        u1.make_out_port("out", v1);
-
-        v2 = u0.get_out_port("out").get_buffer();
-        v3 = u1.get_out_port("out").get_buffer();
-
-        ASSERT_NE(static_cast<int>(v2[0]), static_cast<int>(v3[0]));
-
-        alias_in_port(u1, "in", u0, "in");
-        alias_out_port(u1, "out", u0, "out");
-
-        v2 = u0.get_in_port("in").get_buffer();
-        v3 = u1.get_in_port("in").get_buffer();
-
-        ASSERT_EQ(static_cast<int>(v2[0]), static_cast<int>(v3[0]));
-
-        v2 = u0.get_out_port("out").get_buffer();
-        v3 = u1.get_out_port("out").get_buffer();
-
-        ASSERT_EQ(static_cast<int>(v2[0]), static_cast<int>(v3[0]));
-      }
-    }
-  }
+TEST(Unit, Simple) {
+  Unit u0;
 }
+
+TEST(Unit, Connect) {
+  Unit u0;
+  Unit u1;
+
+  Cargo c0;
+  Cargo c1;
+  Cargo c2;
+
+  c0 = 42;
+
+  u0.make_out_port("out", c0);
+  u1.make_in_port("in");
+
+  c1 = u0.get_out_port("out").get_buffer();
+  c2 = u1.get_in_port("in").get_buffer();
+
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+
+  ASSERT_TRUE(c2.empty());
+
+  connect(u0, "out", u1, "in");
+
+  u1.get_in_port("in").sync();
+
+  c1 = u0.get_out_port("out").get_buffer();
+  c2 = u1.get_in_port("in").get_buffer();
+
+  ASSERT_EQ(c1.get<int>(), c2.get<int>());
+}
+
+TEST(Unit, Alias) {
+  Unit u0;
+  Unit u1;
+
+  Cargo c0;
+  Cargo c1;
+  Cargo c2;
+
+  c0 = 42;
+
+  u0.make_in_port("in", c0);
+  u1.make_in_port("in");
+
+  c1 = u0.get_in_port("in").get_buffer();
+  c2 = u1.get_in_port("in").get_buffer();
+
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+  ASSERT_TRUE(c2.empty());
+
+  u0.make_out_port("out", c0);
+  u1.make_out_port("out");
+
+  c1 = u0.get_out_port("out").get_buffer();
+  c2 = u1.get_out_port("out").get_buffer();
+
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+  ASSERT_TRUE(c2.empty());
+
+  alias_in_port(u0, "in", u1, "in");
+  alias_out_port(u0, "out", u1, "out");
+
+  c1 = u0.get_in_port("in").get_buffer();
+  c2 = u1.get_in_port("in").get_buffer();
+
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+  ASSERT_EQ(c0.get<int>(), c2.get<int>());
+
+  c1 = u0.get_out_port("out").get_buffer();
+  c2 = u1.get_out_port("out").get_buffer();
+
+  ASSERT_EQ(c0.get<int>(), c1.get<int>());
+  ASSERT_EQ(c0.get<int>(), c2.get<int>());
+}
+
+}
+}
+
+

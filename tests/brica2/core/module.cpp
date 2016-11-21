@@ -1,11 +1,8 @@
 /******************************************************************************
  *
- * tests/brica2/core/module.cpp
+ * brica2/core/module.cpp
  *
- * @author Copyright (C) 2016 Kotone Itaya
- * @version 1.0.0
- * @created  2016/06/30 Kotone Itaya -- Created!
- * @@
+ * Copyright (C) 2016 Kotone Itaya
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,85 +23,89 @@
  *
  *****************************************************************************/
 
-#include "gtest/gtest.h"
-#include "brica2/core/vector.hpp"
-#include "brica2/core/component.hpp"
 #include "brica2/core/module.hpp"
+#include "gtest/gtest.h"
 
 namespace brica2 {
-  namespace core {
-    namespace test {
-      class MyComponent : public Component {
-        virtual Dictionary fire(Dictionary& inputs) {
-          return Dictionary();
-        }
-      };
+namespace core {
 
-      TEST(Module, Simple) {
-        Module m0;
-        MyComponent c0;
-        MyComponent c1;
-        Vector<int> v0({1, 2, 3}, {{3}});
-        Vector<int> v1({1, 2, 3}, {{3}});
+class MyComponent : public Component {
+public:
+  Dictionary operator()(Dictionary& inputs) { return Dictionary(); }
+};
 
-        c0.make_in_port("in", v0.clone());
-        c0.make_out_port("out", v0.clone());
+TEST(Module, Simple) {
+  Module m0;
 
-        v1 = c0.get_in_port("in").get_buffer();
+  MyComponent mc0;
+  MyComponent mc1;
 
-        ASSERT_TRUE(v0 == v1);
+  Cargo c0;
+  Cargo c1;
+  Cargo c2;
+  Cargo c3;
 
-        v1 = c0.get_out_port("out").get_buffer();
+  c0 = 42;
+  c1 = 43;
 
-        ASSERT_TRUE(v0 == v1);
+  mc0.make_in_port("in", c0);
+  mc0.make_out_port("out", c1);
 
-        m0.add_component("c0", c0);
+  c2 = mc0.get_in_port("in").get_buffer();
+  c3 = mc0.get_out_port("out").get_buffer();
 
-        c1 = m0.get_component("c0");
+  ASSERT_EQ(c0.get<int>(), c2.get<int>());
+  ASSERT_EQ(c1.get<int>(), c3.get<int>());
 
-        v1 = c1.get_in_port("in").get_buffer();
+  m0.add_component("mc0", mc0);
+  mc1 = m0.get_component<MyComponent>("mc0");
 
-        ASSERT_TRUE(v0 == v1);
+  c2 = mc1.get_in_port("in").get_buffer();
+  c3 = mc1.get_out_port("out").get_buffer();
 
-        v1 = c1.get_out_port("out").get_buffer();
-
-        ASSERT_TRUE(v0 == v1);
-      }
-
-      TEST(Module, Submodule) {
-        Module m0;
-        Module m1;
-        Module m2;
-        MyComponent c0;
-        MyComponent c1;
-        Vector<int> v0({1, 2, 3}, {{3}});
-        Vector<int> v1({1, 2, 3}, {{3}});
-
-        c0.make_in_port("in", v0.clone());
-        c0.make_out_port("out", v0.clone());
-
-        v1 = c0.get_in_port("in").get_buffer();
-
-        ASSERT_TRUE(v0 == v1);
-
-        v1 = c0.get_out_port("out").get_buffer();
-
-        ASSERT_TRUE(v0 == v1);
-
-        m0.add_submodule("m1", m1);
-        m1.add_component("c0", c0);
-
-        m2 = m0.get_submodule("m1");
-        c1 = m2.get_component("c0");
-
-        v1 = c1.get_in_port("in").get_buffer();
-
-        ASSERT_TRUE(v0 == v1);
-
-        v1 = c1.get_out_port("out").get_buffer();
-
-        ASSERT_TRUE(v0 == v1);
-      }
-    }
-  }
+  ASSERT_EQ(c0.get<int>(), c2.get<int>());
+  ASSERT_EQ(c1.get<int>(), c3.get<int>());
 }
+
+TEST(Module, Submodule) {
+  Module m0;
+  Module m1;
+  Module m2;
+
+  MyComponent mc0;
+  MyComponent mc1;
+
+  Cargo c0;
+  Cargo c1;
+  Cargo c2;
+  Cargo c3;
+
+  c0 = 42;
+  c1 = 43;
+
+  mc0.make_in_port("in", c0);
+  mc0.make_out_port("out", c1);
+
+  c2 = mc0.get_in_port("in").get_buffer();
+  c3 = mc0.get_out_port("out").get_buffer();
+
+  ASSERT_EQ(c0.get<int>(), c2.get<int>());
+  ASSERT_EQ(c1.get<int>(), c3.get<int>());
+
+  m0.add_submodule("m1", m1);
+  m1.add_component("mc0", mc0);
+
+  m2 = m0.get_submodule("m1");
+  mc1 = m2.get_component<MyComponent>("mc0");
+
+  c2 = mc1.get_in_port("in").get_buffer();
+  c3 = mc1.get_out_port("out").get_buffer();
+
+  ASSERT_EQ(c0.get<int>(), c2.get<int>());
+  ASSERT_EQ(c1.get<int>(), c3.get<int>());
+}
+
+}
+}
+
+

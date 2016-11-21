@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2/core/scheduler.cpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,16 +23,16 @@
  *
  *****************************************************************************/
 
-#include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#include "brica2/core/scheduler.hpp"
+
+#include <vector>
 
 namespace brica2 {
 namespace core {
 
-TEST(Component, ConstPipeNull)
-{
-  
-}
+Scheduler::Scheduler(Module& model) : model(model), time(0.0) { update(); }
+
+void Scheduler::update() { components = model.get_all_components(); }
 
 }
 }

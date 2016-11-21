@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2/core/scheduler.hpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,18 +23,29 @@
  *
  *****************************************************************************/
 
-#include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#ifndef __BRICA2_CORE_SCHEDULER__
+#define __BRICA2_CORE_SCHEDULER__
+
+#include "brica2/core/module.hpp"
+
+#include <vector>
 
 namespace brica2 {
 namespace core {
 
-TEST(Component, ConstPipeNull)
-{
-  
-}
+class Scheduler {
+public:
+  Scheduler(Module&);
+  void update();
+  virtual double step()=0;
+protected:
+  double time;
+  Module model;
+  std::vector<std::shared_ptr<Component>> components;
+};
 
 }
 }
 
+#endif
 

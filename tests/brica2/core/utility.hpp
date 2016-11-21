@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2/core/utility.hpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,18 +23,26 @@
  *
  *****************************************************************************/
 
-#include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#ifndef __BRICA2_CORE_UTILITY__
+#define __BRICA2_CORE_UTILITY__
 
 namespace brica2 {
 namespace core {
 
-TEST(Component, ConstPipeNull)
-{
-  
-}
+struct Something {
+  int answer = 42;
+};
+
+struct Counter {
+  Counter() { count++; }
+  Counter(const Counter& other) { count++; }
+  Counter(Counter&& other) { count++; }
+  ~Counter() { count--; }
+  static std::size_t count;
+};
 
 }
 }
 
+#endif
 

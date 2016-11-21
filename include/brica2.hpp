@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2.hpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,18 +23,11 @@
  *
  *****************************************************************************/
 
-#include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#ifndef __BRICA2__
+#define __BRICA2__
 
-namespace brica2 {
-namespace core {
+#include "brica2/core.hpp"
+#include "brica2/scheduler.hpp"
 
-TEST(Component, ConstPipeNull)
-{
-  
-}
-
-}
-}
-
+#endif
 

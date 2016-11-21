@@ -1,6 +1,0 @@
-if (build_examples)
-   file(COPY python DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-   if (stacked_autoencoder)
-      add_subdirectory(stacked_autoencoder)
-   endif()
-endif()

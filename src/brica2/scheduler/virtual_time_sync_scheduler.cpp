@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * brica2/core/component.cpp
+ * brica2/scheduler/virtual_time_sync_scheduler.cpp
  *
  * Copyright (C) 2016 Kotone Itaya
  *
@@ -23,15 +23,41 @@
  *
  *****************************************************************************/
 
-#include "brica2/core/component.hpp"
-#include "gtest/gtest.h"
+#include "brica2/scheduler/virtual_time_sync_scheduler.hpp"
 
 namespace brica2 {
-namespace core {
+namespace scheduler {
 
-TEST(Component, ConstPipeNull)
+VirtualTimeSyncScheduler::VirtualTimeSyncScheduler(core::Module& model, std::size_t threads)
+  : core::Scheduler(model), pool(threads) {}
+
+double VirtualTimeSyncScheduler::step()
 {
-  
+  std::size_t size = pool.size();
+
+  for(auto component: components) {
+    if(size > 1) {
+      pool.enqueue([this, component]{
+        component->input(time);
+        component->fire();
+      });
+    } else {
+      component->input(time);
+      component->fire();
+    }
+  }
+
+  time += 1.0;
+
+  pool.wait();
+
+  for(auto component: components) {
+    component->output(time);
+  }
+
+  pool.wait();
+
+  return time;
 }
 
 }

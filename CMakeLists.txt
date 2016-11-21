@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
-option(test "Build all tests." OFF)
-option(benchmark "Build all benchmarks." OFF)
+option(BRICA2_TEST "Build all tests." ON)
+option(BRICA2_BENCH "Build all benchmarks." ON)
 
 set(PROJECT_NAME BriCA2)
 project(${PROJECT_NAME})
@@ -9,18 +9,27 @@ set(BRICA2_VERSION_MAJOR 1)
 set(BRICA2_VERSION_MINOR 0)
 set(BRICA2_VERSION_PATCH 0)
 
-add_definitions("-std=c++11")
+# Enable C++11
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-std=c++11" STD_CXX11)
+if(STD_CXX11)
+  add_definitions("-std=c++11")
+else()
+  add_definitions("-std=c++0x")
+endif()
 
-include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${PROJECT_BINARY_DIR})
+# Enable including/linking from CMAKE_PREFIX_PATH
+if(DEFINED CMAKE_PREFIX_PATH)
+  include_directories(${CMAKE_PREFIX_PATH}/include)
+  link_directories(${CMAKE_PREFIX_PATH}/lib)
+endif()
 
-find_package(Boost COMPONENTS system thread python REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+# Header only external software
+include_directories(external/asio/asio/include)
 
-find_package(PythonLibs 2.7 REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
+# Include directories for BriCA2
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
+add_subdirectory(src)
 add_subdirectory(external)
-add_subdirectory(brica2)
 add_subdirectory(tests)
-add_subdirectory(examples)
