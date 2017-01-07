@@ -15,3 +15,12 @@ if(BRICA2_TEST)
   add_test(NAME core COMMAND core_tests)
 endif()
 
+if(BRICA2_BENCH)
+  include_directories(${benchmark_SOURCE_DIR}/include)
+
+  add_executable(cargo_bm cargo_bm.cpp)
+  target_link_libraries(cargo_bm benchmark brica2-core)
+
+  add_executable(thread_bm thread_bm.cpp)
+  target_link_libraries(thread_bm benchmark brica2-core brica2-scheduler)
+endif()

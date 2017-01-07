@@ -81,23 +81,23 @@ void ThreadPool::enqueue(std::function<void()> f)
       {
         std::lock_guard<std::mutex> lock(self->mutex);
         self->count -= 1;
-      }
 
-      if(self->count == 0) {
-        self->cond.notify_one();
+        if(self->count == 0) {
+          self->cond.notify_one();
+        }
       }
   });
 }
 
 bool ThreadPool::running() const
-{ return self->count != 0; }
+{
+  std::lock_guard<std::mutex> lock(self->mutex);
+  return self->count != 0;
+}
 
 void ThreadPool::wait() const
 {
-  if(running()) {
-    std::unique_lock<std::mutex> lock(self->mutex);
-    self->cond.wait(lock);
-  }
+  while(running());
 }
 
 const std::size_t ThreadPool::size() const { return self->threads.size(); }

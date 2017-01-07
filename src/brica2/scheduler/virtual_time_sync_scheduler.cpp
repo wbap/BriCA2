@@ -52,7 +52,13 @@ double VirtualTimeSyncScheduler::step()
   pool.wait();
 
   for(auto component: components) {
-    component->output(time);
+    if(size > 1) {
+      pool.enqueue([this, component]{
+        component->output(time);
+      });
+    } else {
+      component->output(time);
+    }
   }
 
   pool.wait();
